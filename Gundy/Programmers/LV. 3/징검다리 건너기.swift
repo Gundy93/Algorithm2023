@@ -1,29 +1,24 @@
 func solution(_ stones:[Int], _ k:Int) -> Int {
-    var indices = Set<Int>()
-    let sortedStones = stones.enumerated().sorted {
-        return $0.element < $1.element
-    }
-    var result = 0
-    for stone in sortedStones {
-        indices.insert(stone.offset)
-        guard indices.count >= k else {
-            continue
+    var start = 1
+    var end = 200000000
+    while start < end {
+        let mid = (start + end) / 2
+        var count = 0
+        for index in 0...stones.count - 1 {
+            if stones[index] - mid <= 0 {
+                count += 1
+                if count == k {
+                    break
+                }
+            } else {
+                count = 0
+            }
         }
-        var count = 1
-        var left = stone.offset - 1
-        var right = stone.offset + 1
-        while indices.contains(left) {
-            count += 1
-            left -= 1
-        }
-        while indices.contains(right) {
-            count += 1
-            right += 1
-        }
-        if count >= k {
-            result = stone.element
-            break
+        if count == k {
+            end = mid
+        } else {
+            start = mid + 1
         }
     }
-    return result
+    return start
 }
