@@ -5,15 +5,13 @@ func solution(_ enroll:[String], _ referral:[String], _ seller:[String], _ amoun
         parents[name] = parent
     }
     func recursion(_ name: String, _ price: Int) {
-        guard let parent = parents[name] else {
+        guard let parent = parents[name], price >= 10 else {
             money[name, default: 0] += price
             return
         }
         let tip = price / 10
         money[name, default: 0] += price - tip
-        if tip > 0 {
-            recursion(parent, tip)
-        }
+        recursion(parent, tip)
     }
     for (name, quntity) in zip(seller, amount) {
         recursion(name, quntity * 100)
