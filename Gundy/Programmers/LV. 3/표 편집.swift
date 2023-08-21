@@ -1,54 +1,57 @@
 class Node {
-    var up: Node?
-    var down: Node?
-    let index: Int
+    let number: Int
+    var left: Node?
+    var right: Node?
 
-    init(up: Node? = nil, down: Node? = nil, index: Int) {
-        self.up = up
-        self.down = down
-        self.index = index
+    init(_ number: Int) {
+        self.number = number
     }
 }
 
 func solution(_ n:Int, _ k:Int, _ cmd:[String]) -> String {
-    var result = Array(repeating: "O", count: n)
-    var nodes = [Node(index: 0)]
-    for i in stride(from: 1, to: n, by: 1) {
-        nodes.append(Node(index: i))
-        nodes[nodes.count - 1].up = nodes[nodes.count - 2]
-        nodes[nodes.count - 2].down = nodes[nodes.count - 1]
+    var node = Node(0)
+    var nodes = [node]
+    for number in stride(from: 1, to: n, by: 1) {
+        let next = Node(number)
+        nodes.append(next)
+        node.right = next
+        next.left = node
+        node = next
     }
-    var now = nodes[k]
+    node = nodes[k]
     var removed = [Node]()
+    var board = Array(repeating: "O", count: n)
     for command in cmd {
-        let order = command.split(separator: " ").map(String.init)
-        switch order.first {
-        case "U":
-            let times = Int(order[1])!
-            for _ in 1...times {
-                now = now.up!
-            }
-        case "D":
-            let times = Int(order[1])!
-            for _ in 1...times {
-                now = now.down!
-            }
+        let key = command.split(separator: " ").map(String.init)
+        switch key[0] {
         case "C":
-            result[now.index] = "X"
-            removed.append(now)
-            now.up?.down = now.down
-            now.down?.up = now.up
-            if now.down == nil {
-                now = now.up!
+            removed.append(node)
+            board[node.number] = "X"
+            node.left?.right = node.right
+            if let right = node.right {
+                right.left = node.left
+                node = right
             } else {
-                now = now.down!
+                node = node.left!
+            }
+        case "Z":
+            let last = removed.removeLast()
+            board[last.number] = "O"
+            last.left?.right = last
+            last.right?.left = last
+        case "U":
+            var number = Int(key[1])!
+            while number > 0 {
+                node = node.left!
+                number -= 1
             }
         default:
-            let last = removed.removeLast()
-            result[last.index] = "O"
-            last.up?.down = last
-            last.down?.up = last
+            var number = Int(key[1])!
+            while number > 0 {
+                node = node.right!
+                number -= 1
+            }
         }
     }
-    return result.joined()
+    return board.joined()
 }
