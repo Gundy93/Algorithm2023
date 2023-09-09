@@ -57,40 +57,33 @@ struct Heap<T> {
 }
 
 func solution(_ n:Int, _ paths:[[Int]], _ gates:[Int], _ summits:[Int]) -> [Int] {
-    var nodes = Array(repeating: [(Int, Int)](), count: n + 1)
     let summits = Set(summits)
+    var next = [Int: [(point: Int, intensity: Int)]]()
     for path in paths {
-        nodes[path[0]].append((path[1], path[2]))
-        nodes[path[1]].append((path[0], path[2]))
+        next[path[0], default: []].append((path[1], path[2]))
+        next[path[1], default: []].append((path[0], path[2]))
     }
-    func Dijkstra() -> [Int] {
-        var heap = Heap<(Int, Int)> { $0.0 < $1.0 }
-        var distances = Array(repeating: Int.max, count: n + 1)
-        for gate in gates {
-            heap.insert((0, gate))
-            distances[gate] = 0
-        }
-        while heap.isEmpty == false {
-            let current = heap.removeFirst()!
-            guard distances[current.1] >= current.0 else { continue }
-            for nextData in nodes[current.1] {
-                let totalCost = max(current.0, nextData.1)
-                if distances[nextData.0] > totalCost {
-                    distances[nextData.0] = totalCost
-                    if summits.contains(nextData.0) { continue }
-                    heap.insert((totalCost, nextData.0))
-                }
+    var intensities = Array(repeating: Int.max, count: n + 1)
+    var heap = Heap([(point: Int, intensity: Int)]()) { $0.intensity < $1.intensity }
+    for gate in gates {
+        next[gate, default: []].forEach({ heap.insert($0) })
+    }
+    while heap.isEmpty == false {
+        let current = heap.removeFirst()!
+        guard current.intensity <= intensities[current.point] else { continue }
+        for next in next[current.point, default: []] {
+            let intensity = max(next.intensity, current.intensity)
+            if intensities[next.point] > intensity {
+                intensities[next.point] = intensity
+                guard summits.contains(next.point) == false else { continue }
+                heap.insert((next.point, intensity))
             }
         }
-        return distances
     }
-    let distances = Dijkstra()
     var result = [Int.max, Int.max]
     for summit in summits.sorted() {
-        if result[1] > distances[summit] {
-            result = [summit, distances[summit]]
-        } else if result[1] == distances[summit], result[0] > summit {
-            result = [summit, distances[summit]]
+        if intensities[summit] < result[1] {
+            result = [summit, intensities[summit]]
         }
     }
     return result
