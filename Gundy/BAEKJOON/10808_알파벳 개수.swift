@@ -1,15 +1,6 @@
-let input = readLine()!
+let alphabets = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+let text = readLine()!.map(String.init)
+var counter = [String: Int]()
 
-let alphabet: [Character] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-
-var result = String()
-
-for i in 0..<alphabet.count {
-    result += String(input.filter({ $0 == alphabet[i] }).count)
-    guard i != alphabet.count - 1 else {
-        break
-    }
-    result += " "
-}
-
-print(result)
+text.forEach { counter[$0, default: 0] += 1 }
+print(alphabets.map({ String(counter[$0, default: 0]) }).joined(separator: " "))
