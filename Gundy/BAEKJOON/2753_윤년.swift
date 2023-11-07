@@ -1,12 +1,3 @@
-func solution() {
-    let year: Int = Int(readLine()!)!
-    if year % 400 == 0{
-        print(1)
-    } else if year % 100 != 0 && year % 4 == 0 {
-        print(1)
-    } else {
-        print(0)
-    }
-}
+let year = Int(readLine()!)!
 
-solution()
+print(year % 400 == 0 ? 1 : year % 100 == 0 ? 0 : year % 4 == 0 ? 1 : 0)
