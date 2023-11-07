@@ -1,14 +1,7 @@
-func solution() {
-    let firstNumber: Int = Int(readLine()!)!
-    let secondNumber: Int = Int(readLine()!)!
-    let thirdNumber: Int = Int(readLine()!)!
-    
-    let result: [Int] = (firstNumber * secondNumber * thirdNumber).description.compactMap { Int(String($0)) }
-    
-    var numbers: [Int] = .init(repeating: 0, count: 10)
-    result.forEach { numbers[$0] += 1 }
-    
-    numbers.forEach { print($0) }
-}
+let (a, b, c) = (Int(readLine()!)!, Int(readLine()!)!, Int(readLine()!)!)
+let number = a * b * c
+let target = String(number).compactMap { Int(String($0)) }
+var counter = [Int: Int]()
 
-solution()
+target.forEach { counter[$0, default: 0] += 1 }
+stride(from: 0, through: 9, by: 1).forEach { print(counter[$0, default: 0]) }
