@@ -1,20 +1,15 @@
-func solution() {
-    let dices: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
-    var defaultReward: Int = 0
-    var additionalReward: Int = 100
-    var number: Int = 0
-    switch Set(dices).count {
-    case 1:
-        defaultReward = 10000
-        additionalReward = 1000
-        number = dices[0]
-    case 2:
-        defaultReward = 1000
-        number = dices[1]
-    default:
-        number = dices[2]
-    }
-    print(defaultReward + (additionalReward * number))
+let dices = readLine()!.split(separator: " ").compactMap { Int(String($0)) }
+let (a, b, c) = (dices[0], dices[1], dices[2])
+var reward = Int()
+
+if a == b, a == c {
+    reward = 10000 + a * 1000
+} else if a == b {
+    reward = 1000 + a * 100
+} else if b == c {
+    reward = 1000 + b * 100
+} else {
+    reward = max(a, max(b, c)) * 100
 }
 
-solution()
+print(reward)
