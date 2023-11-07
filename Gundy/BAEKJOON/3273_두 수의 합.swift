@@ -1,28 +1,14 @@
-func solution() {
-    let _ = readLine()
-    var numbers: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
-    let target: Int = Int(readLine()!)!
-    while let last = numbers.last,
-          last > target {
-        numbers.removeLast()
+let _ = readLine()
+let numbers = Set(readLine()!.split(separator: " ").compactMap { Int(String($0)) })
+let target = Int(readLine()!)!
+var result = 0
+
+for number in numbers.sorted() {
+    guard Double(number) < Double(target) / 2 else { break }
+    
+    if numbers.contains(target - number) {
+        result += 1
     }
-    guard numbers.count > 1 else {
-        print("0")
-        return
-    }
-    var result: Int = 0
-    while numbers.count > 1 {
-        if numbers.first! + numbers.last! > target {
-            numbers.removeLast()
-        } else if numbers.first! + numbers.last! < target {
-            numbers.removeFirst()
-        } else {
-            result += 1
-            numbers.removeFirst()
-            numbers.removeLast()
-        }
-    }
-    print(result)
 }
 
-solution()
+print(result)
