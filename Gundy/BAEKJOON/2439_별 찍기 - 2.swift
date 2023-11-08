@@ -1,9 +1,5 @@
-let times: Int = Int(readLine()!)!
-var star: String = "*"
-var space: String = String(repeating: " ", count: times)
+let times = Int(readLine()!)!
 
-for _ in 1...times {
-    space.removeLast()
-    print(space + star)
-    star += "*"
+stride(from: 1, through: times, by: 1).forEach { time in
+    print(Array(repeating: " ", count: times - time).joined() + Array(repeating: "*", count: time).joined())
 }
