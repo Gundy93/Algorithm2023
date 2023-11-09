@@ -1,8 +1,5 @@
-func solution() {
-    let _ = readLine()
-    let numbers: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) })
-    let target: Int = Int(readLine()!)!
-    print(numbers.filter({ $0 == target }).count)
-}
+var counter = [String: Int]()
+let _ = readLine()
 
-solution()
+readLine()!.split(separator: " ").map(String.init).forEach { counter[$0, default: 0] += 1 }
+print(counter[readLine()!, default: 0])
