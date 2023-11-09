@@ -1,13 +1,4 @@
-func solution() {
-    let input: Int = readLine()!.split(separator: " ").compactMap({ Int(String($0)) })[1]
-    let numbers: [Int] = readLine()!.split(separator: " ").compactMap({ Int(String($0)) })
-    var result: [String] = []
-    for number in numbers {
-        if number < input {
-            result.append(number.description)
-        }
-    }
-    print(result.joined(separator: " "))
-}
+let target = readLine()!.split(separator: " ").compactMap { Int(String($0)) }[1]
+let result = readLine()!.split(separator: " ").map(String.init).filter { Int($0)! < target }.joined(separator: " ")
 
-solution()
+print(result)
