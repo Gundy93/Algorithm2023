@@ -1,15 +1,8 @@
-func solution() {
-    var result: Int = 0
-    var index: Int = 0
-    for time in 1...9 {
-        let number: Int = Int(readLine()!)!
-        if number > result {
-            result = number
-            index = time
-        }
-    }
-    print(result)
-    print(index)
-}
+var numbers = [(Int, Int)]()
 
-solution()
+stride(from: 1, through: 9, by: 1).forEach { index in
+    numbers.append((Int(readLine()!)!, index))
+}
+numbers.sort { $0.0 < $1.0 }
+print(numbers[8].0)
+print(numbers[8].1)
