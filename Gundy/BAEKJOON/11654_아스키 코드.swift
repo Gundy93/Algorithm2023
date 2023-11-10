@@ -1,0 +1,1 @@
+print(UnicodeScalar(readLine()!)!.value)
