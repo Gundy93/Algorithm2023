@@ -1,38 +1,25 @@
-func solution() {
-    var leftSide: [String] = []
-    var rightSide: [String] = []
-    let input = readLine()!
-    for text in input {
-        switch text {
-        case "<":
-            guard leftSide.isEmpty == false else { continue }
-            rightSide.append(leftSide.removeLast())
-        case ">":
-            guard rightSide.isEmpty == false else { continue }
-            leftSide.append(rightSide.removeLast())
+let countOfCases = Int(readLine()!)!
+
+for _ in 1...countOfCases {
+    var left = [String]()
+    var right = [String]()
+    
+    readLine()!.map(String.init).forEach { word in
+        switch word {
         case "-":
-            leftSide.popLast()
+            let _ = left.popLast()
+        case "<":
+            guard let last = left.popLast() else { return }
+            
+            right.append(last)
+        case ">":
+            guard let last = right.popLast() else { return }
+            
+            left.append(last)
         default:
-            let value = String(text)
-            leftSide.append(value)
+            left.append(word)
         }
     }
-
-    var result: String = ""
-
-    for index in 0..<leftSide.count {
-        result += leftSide[index]
-    }
-
-    for _ in 0..<rightSide.count {
-        result += rightSide.removeLast()
-    }
-
-    print(result)
-}
-
-let count: Int = Int(readLine()!)!
-
-for _ in 1...count {
-    solution()
+    
+    print(left.joined() + right.reversed().joined())
 }
