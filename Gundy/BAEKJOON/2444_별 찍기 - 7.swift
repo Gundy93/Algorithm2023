@@ -1,24 +1,5 @@
-func solution() {
-    let times: Int = Int(readLine()!)!
-    var stars: String = "*"
-    var space: String = String(repeating: " ", count: times)
+let count = Int(readLine()!)!
 
-    for _ in 1...times {
-        space.removeLast()
-        print(space + stars)
-        stars += "**"
-    }
-
-    guard times > 1 else { return }
-
-    stars = String(repeating: "**", count: times - 1)
-
-    for _ in 1...times - 1 {
-        space += " "
-        stars.removeLast()
-        print(space + stars)
-        stars.removeLast()
-    }
+stride(from: 1, to: count * 2, by: 1).forEach { row in
+    print(String(repeating: " ", count: abs(count - row)) + String(repeating: "*", count: (count - abs(count - row)) * 2 - 1))
 }
-
-solution()
