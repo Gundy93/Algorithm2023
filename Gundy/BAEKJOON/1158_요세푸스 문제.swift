@@ -1,65 +1,53 @@
-class Node {
+final class Node<T> {
     
-    let value: String
-    var next: Node?
+    var value: T
+    var next: Node<T>?
     
-    init(_ value: String) {
+    init(value: T) {
         self.value = value
     }
 }
 
-struct List {
+struct LinkedList<T> {
     
-    var first: Node?
-    var last: Node?
-    var isEmpty: Bool {
-        return first == nil
-    }
+    var head: Node<T>?
+    var tail: Node<T>?
     
-    mutating func append(_ value: String) {
-        guard first != nil else {
-            first = Node(value)
-            last = first
+    mutating func insert(_ element: T) {
+        let node = Node(value: element)
+        
+        guard let tail = tail else {
+            head = node
+            tail = node
             return
         }
-        last?.next = Node(value)
-        last = last?.next
-    }
-    
-    mutating func configureCycle() {
-        last?.next = first
-    }
-    
-    mutating func remove(at index: Int) -> String {
-        if index > 1 {
-            for _ in 1...index-1 {
-                first = first?.next
-                last = last?.next
-            }
-        }
-        return removeFirst()
-    }
-    
-    mutating func removeFirst() -> String {
-        let value: String = first!.value
-        first = first?.next
-        last?.next = first
-        return value
+        
+        tail.next = node
+        self.tail = node
     }
 }
 
-func solution() {
-    let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-    var numbers: List = List()
-    for number in 1...input[0] {
-        numbers.append(String(number))
-    }
-    numbers.configureCycle()
-    var result: [String] = []
-    for _ in 1...input[0] {
-        result.append(numbers.remove(at: input[1]))
-    }
-    print("<", result.joined(separator: ", "), ">", separator: "")
+let input = readLine()!.split(separator: " ").compactMap { Int($0) }
+var list = LinkedList<Int>()
+
+for number in 1...input[0] {
+    list.insert(number)
 }
 
-solution()
+list.tail?.next = list.head
+
+var result = [String]()
+var current = list.tail
+
+while result.count < input[0] {
+    for _ in stride(from: 1, to: input[1], by: 1) {
+        current = current?.next
+    }
+    
+    guard let next = current?.next else { break }
+    
+    result.append(String(next.value))
+    current?.next = next.next
+}
+
+print("<" + result.joined(separator: ", ") + ">")
