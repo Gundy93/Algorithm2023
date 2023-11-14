@@ -1,26 +1,16 @@
-func factorization(number: Int) -> [Int] {
-    var number = number
-    var result = [Int]()
-    var divisor = 2
+var number = Int(readLine()!)!
 
-    while divisor < number {
+loop: while number > 1 {
+    for divisor in 2...number {
         if number % divisor == 0 {
-            result.append(divisor)
+            print(divisor)
             number /= divisor
-        } else {
-            divisor += 1
+            
+            continue loop
         }
     }
-
-    if number != 1 {
-        result.append(number)
-    }
-
-    return result
-}
-
-let result = factorization(number: Int(readLine()!)!)
-
-for number in result {
+    
     print(number)
+    
+    break
 }
