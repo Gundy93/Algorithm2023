@@ -1,12 +1,20 @@
-let input: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) })
-backTracking(numbers: [], to: input[0], count: input[1])
-func backTracking(numbers: [Int], to limit: Int, count: Int) {
-    if numbers.count == count {
-        print(numbers.map({ $0.description }).joined(separator: " "))
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var result = String()
+
+func recursion(_ numbers: [Int]) {
+    guard numbers.count < input[1] else {
+        result += numbers.map(String.init).joined(separator: " ") + "\n"
+        
         return
     }
-    for number in 1...limit {
+    
+    for number in 1...input[0] {
         guard numbers.contains(number) == false else { continue }
-        backTracking(numbers: numbers + [number], to: limit, count: count)
+        
+        recursion(numbers + [number])
     }
 }
+
+recursion([])
+
+print(result)
