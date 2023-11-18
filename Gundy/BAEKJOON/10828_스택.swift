@@ -1,37 +1,19 @@
-struct Stack<T> {
+let numberOfCommands = Int(readLine()!)!
+var stack = [String]()
 
-    private var container: [T]
-    var last: T? { return container.last }
-    var count: Int { return container.count }
-    var isEmpty: Bool { return container.isEmpty }
-
-    init(_ elements: [T] = []) {
-        self.container = elements
-    }
-
-    mutating func push(_ newElemnet: T) {
-        container.append(newElemnet)
-    }
-
-    mutating func pop() -> T? {
-        return container.popLast()
-    }
-}
-
-var stack = Stack([Int]())
-
-for _ in 1...Int(readLine()!)! {
-    let command = readLine()!
-    switch command {
+for _ in 1...numberOfCommands {
+    let command = readLine()!.split(separator: " ").map(String.init)
+    
+    switch command[0] {
+    case "push":
+        stack.append(command[1])
     case "pop":
-        print(stack.pop() ?? -1)
+        print(stack.popLast() ?? -1)
     case "size":
         print(stack.count)
     case "empty":
         print(stack.isEmpty ? 1 : 0)
-    case "top":
-        print(stack.last ?? -1)
     default:
-        stack.push(command.split(separator: " ").compactMap({ Int($0) })[0])
+        print(stack.last ?? -1)
     }
 }
