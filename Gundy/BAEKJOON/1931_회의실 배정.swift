@@ -1,34 +1,24 @@
-struct Meeting {
+let count = Int(readLine()!)!
+var times = [(start: Int, end: Int)]()
 
-    let start: Int
-    let end: Int
+for _ in 1...count {
+    let input = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    times.append((input[0], input[1]))
 }
 
-let numberOfMeetings = Int(readLine()!)!
-let meetings: [Meeting] = {
-    var meetings = [Meeting]()
+times.sort { $0.end == $1.end ? $0.start < $1.start : $0.end < $1.end }
 
-    for _ in 1...numberOfMeetings {
-        let times = readLine()!.split(separator: " ").compactMap({ Int($0) })
+var result = 0
+var last = (start: -1, end: -1)
 
-        meetings.append(Meeting(start: times[0], end: times[1]))
-    }
-
-    return meetings.sorted {
-        if $0.end == $1.end {
-            return $0.start < $1.start
-        }
-        return $0.end < $1.end
-    }
-}()
-
-var result = 1
-var currentMeeting = meetings[0]
-
-for index in 1..<numberOfMeetings {
-    guard currentMeeting.end <= meetings[index].start else { continue }
+for index in 0...count - 1 {
+    let current = times[index]
+    
+    guard last.end <= current.start else { continue }
+    
     result += 1
-    currentMeeting = meetings[index]
+    last = current
 }
 
 print(result)
