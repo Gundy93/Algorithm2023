@@ -1,67 +1,79 @@
 struct Queue<T> {
-
-    private var left: [T] = []
-    private var right: [T]
-    var count: Int {
-        return left.count + right.count
-    }
-    var isEmpty: Bool {
-        return left.isEmpty && right.isEmpty
-    }
-    var first: T? {
-        if left.isEmpty {
-            return right.first
+    
+    final class Node {
+        
+        let value: T
+        var next: Node?
+        
+        init(value: T) {
+            self.value = value
         }
-        return left.last
+    }
+    
+    private var head: Node?
+    private var tail: Node?
+    var first: T? {
+        return head?.value
     }
     var last: T? {
-        if right.isEmpty {
-            return left.first
+        return tail?.value
+    }
+    var count: Int = 0
+    var isEmpty: Bool {
+        return count == 0
+    }
+    
+    mutating func enqueue(_ newElement: T) {
+        let node = Node(value: newElement)
+        
+        count += 1
+        
+        guard let lastNode = tail else {
+            head = node
+            tail = node
+            
+            return
         }
-        return right.last
+        
+        lastNode.next = node
+        tail = node
     }
-
-    init(_ elements: [T] = []) {
-        right = elements
-    }
-
-    mutating func enqueue(_ element: T) {
-        right.append(element)
-    }
-
+    
     mutating func dequeue() -> T? {
-        if left.isEmpty {
-            if right.isEmpty {
-                return nil
-            }
-            left = right.reversed()
-            right = []
+        let element = first
+        
+        if head?.next == nil {
+            tail = nil
         }
-        return left.removeLast()
+        
+        head = head?.next
+        
+        if count > 0 {
+            count -= 1
+        }
+        
+        return element
     }
 }
 
-func solution() {
-    let numberOfCommands = Int(readLine()!)!
-    var queue: Queue<Int> = Queue()
-    for _ in 1...numberOfCommands {
-        let command = readLine()!
-        switch command {
-        case "front":
-            print(queue.first ?? -1)
-        case "back":
-            print(queue.last ?? -1)
-        case "size":
-            print(queue.count)
-        case "empty":
-            print(queue.isEmpty ? 1 : 0)
-        case "pop":
-            print(queue.dequeue() ?? -1)
-        default:
-            let element = command.split(separator: " ").compactMap({ Int($0) })[0]
-            queue.enqueue(element)
-        }
+let count = Int(readLine()!)!
+var queue = Queue<String>()
+
+for _ in 1...count {
+    let command = readLine()!.split(separator: " ").map(String.init)
+    
+    switch command[0] {
+    case "push":
+        queue.enqueue(command[1])
+    case "pop":
+        print(queue.dequeue() ?? "-1")
+    case "size":
+        print(queue.count)
+    case "empty":
+        print(queue.isEmpty ? 1 : 0)
+    case "front":
+        print(queue.first ?? "-1")
+    default:
+        print(queue.last ?? "-1")
     }
 }
-
-solution()
