@@ -1,16 +1,19 @@
-let input: [Int] = readLine()!.split(separator : " ").compactMap({ Int($0) })
-let number: Int = input[0]
-let times: Int = input[1]
-let dividing: Int = input[2]
-print(recursivelyMultiply(times))
+let input = readLine()!.split(separator: " ").map { Int($0)! }
 
-func recursivelyMultiply(_ count: Int) -> Int {
-    guard count > 0 else { return 1 }
-    let temporary: Int = recursivelyMultiply(count / 2)
-    switch count % 2 {
+func recursion(_ count: Int) -> Int {
+    switch count {
+    case 0:
+        return 1
     case 1:
-        return temporary % dividing * temporary % dividing * number % dividing
+        return input[0] % input[2]
     default:
-        return temporary % dividing * temporary % dividing
+        let next = recursion(count / 2) % input[2]
+        if count % 2 == 0 {
+            return next * next % input[2]
+        } else {
+            return next * next % input[2] * input[0] % input[2]
+        }
     }
 }
+
+print(recursion(input[1]))
