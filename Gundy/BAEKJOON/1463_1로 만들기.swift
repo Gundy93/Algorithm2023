@@ -1,20 +1,18 @@
-var counter = [0, 0]
-var target = Int(readLine()!)!
+let target = Int(readLine()!)!
+var dp = Array(repeating: 0, count: target + 1)
 
-if target == 1 {
-    print(0)
-} else {
-    for number in 2...target {
-        var count = counter[number - 1]
-        if number % 2 == 0,
-           counter[number / 2] < count {
-            count = counter[number / 2]
-        }
-        if number % 3 == 0,
-           counter[number / 3] < count {
-            count = counter[number / 3]
-        }
-        counter.append(count + 1)
+dp[1] = 0
+
+for number in stride(from: 2, through: target, by: 1) {
+    if number % 3 == 0 && number % 2 == 0 {
+        dp[number] = min(dp[number - 1], min(dp[number / 3], dp[number / 2])) + 1
+    } else if number % 3 == 0 {
+        dp[number] = min(dp[number - 1], dp[number / 3]) + 1
+    } else if number % 2 == 0 {
+        dp[number] = min(dp[number - 1],  dp[number / 2]) + 1
+    } else {
+        dp[number] = dp[number - 1] + 1
     }
-    print(counter[target])
 }
+
+print(dp[target])
