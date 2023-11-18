@@ -1,24 +1,22 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-let coins: [Int] = {
-    var coins = [Int]()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var coins = [Int]()
 
-    for _ in 1...input[0] {
-        coins.append(Int(readLine()!)!)
-    }
+for _ in 1...input[0] {
+    coins.append(Int(readLine()!)!)
+}
 
-    return coins
-}()
-var remainingMoney = input[1]
-var currentIndex = input[0] - 1
+coins.sort(by: >)
+
+var target = input[1]
 var result = 0
 
-while remainingMoney > 0 {
-    guard coins[currentIndex] <= remainingMoney else {
-        currentIndex -= 1
-        continue
-    }
-    remainingMoney -= coins[currentIndex]
-    result += 1
+for index in 0...coins.count - 1 {
+    guard target > 0 else { break }
+    
+    let coin = coins[index]
+    
+    result += target / coin
+    target %= coin
 }
 
 print(result)
