@@ -1,73 +1,117 @@
 struct Deque<T> {
-    private var leading: [T] = []
-    private var trailing: [T] = []
     
-    var head: T? {
-        return leading.isEmpty ? trailing.first : leading.last
-    }
-    var tail: T? {
-        return trailing.isEmpty ? leading.first : trailing.last
-    }
-    var count: Int {
-        return leading.count + trailing.count
-    }
-    var isEmpty: Bool {
-        return leading.isEmpty && trailing.isEmpty
-    }
-    
-    mutating func insertAtHead(_ element: T) {
-        leading.append(element)
-    }
-    
-    mutating func insertAtTail(_ element: T) {
-        trailing.append(element)
-    }
-    
-    @discardableResult mutating func popFirst() -> T? {
-        if leading.isEmpty {
-            leading = trailing.reversed()
-            trailing = []
+    final class Node {
+        
+        let value: T
+        var previous: Node?
+        var next: Node?
+        
+        init(value: T) {
+            self.value = value
         }
-        return leading.popLast()
     }
     
-    @discardableResult mutating func popLast() -> T? {
-        if trailing.isEmpty {
-            trailing = leading.reversed()
-            leading = []
+    private var head: Node?
+    private var tail: Node?
+    var first: T? {
+        return head?.value
+    }
+    var last: T? {
+        return tail?.value
+    }
+    
+    mutating func pushFirst(_ newElement: T) {
+        let node = Node(value: newElement)
+        
+        guard let first = head else {
+            head = node
+            tail = node
+            
+            return
         }
-        return trailing.popLast()
+        
+        first.previous = node
+        node.next = first
+        head = node
+    }
+    
+    mutating func pushLast(_ newElement: T) {
+        let node = Node(value: newElement)
+        
+        guard let last = tail else {
+            head = node
+            tail = node
+            
+            return
+        }
+        
+        last.next = node
+        node.previous = last
+        tail = node
+    }
+    
+    mutating func popFirst() -> T? {
+        let element = first
+        
+        guard head != nil else { return element }
+        
+        if head === tail {
+            head = nil
+            tail = nil
+        } else {
+            head = head?.next
+        }
+        
+        return element
+    }
+    
+    mutating func popLast() -> T? {
+        let element = last
+        
+        guard tail != nil else { return element }
+        
+        if head === tail {
+            head = nil
+            tail = nil
+        } else {
+            tail = tail?.previous
+        }
+        
+        return element
     }
 }
 
-func solution() {
-    var deque = Deque<String>()
-    var count: Int = Int(readLine()!)!
-    for _ in 1...count {
-        let command: String = readLine()!
-        switch command {
-        case "front":
-            print(deque.head ?? "-1")
-        case "back":
-            print(deque.tail ?? "-1")
-        case "size":
-            print(deque.count)
-        case "empty":
-            print(deque.isEmpty ? "1" : "0")
-        default:
-            let input = command.split(separator: " ")
-            switch input[0] {
-            case "push_front":
-                deque.insertAtHead(String(input[1]))
-            case "push_back":
-                deque.insertAtTail(String(input[1]))
-            case "pop_front":
-                print(deque.popFirst() ?? "-1")
-            default:
-                print(deque.popLast() ?? "-1")
-            }
+let count = Int(readLine()!)!
+var deque = Deque<String>()
+var size = 0
+
+for _ in 1...count {
+    let command = readLine()!.split(separator: " ").map(String.init)
+    
+    switch command[0] {
+    case "push_front":
+        deque.pushFirst(command[1])
+        size += 1
+    case "push_back":
+        deque.pushLast(command[1])
+        size += 1
+    case "pop_front":
+        print(deque.popFirst() ?? -1)
+        if size > 0 {
+            size -= 1
         }
+    case "pop_back":
+        print(deque.popLast() ?? -1)
+        if size > 0 {
+            size -= 1
+        }
+    case "size":
+        print(size)
+    case "empty":
+        print(size == 0 ? 1 : 0)
+    case "front":
+        print(deque.first ?? -1)
+    default:
+        print(deque.last ?? -1)
     }
 }
-
-solution()
