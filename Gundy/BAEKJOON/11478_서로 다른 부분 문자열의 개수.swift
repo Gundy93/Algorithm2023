@@ -1,20 +1,13 @@
-func countSubstrings(from text: String) -> Int {
-    var substrings = Set<String>()
-    let characters = text.map({ String($0) })
+let input = readLine()!.map(String.init)
+var substrings = Set<String>()
 
-    func recursion(_ text: String, nextIndex: Int) {
+for startIndex in 0...input.count - 1 {
+    var text = String()
+    
+    for endIndex in startIndex...input.count - 1 {
+        text += input[endIndex]
         substrings.insert(text)
-
-        guard nextIndex < characters.count else { return }
-
-        recursion(text + characters[nextIndex], nextIndex: nextIndex + 1)
     }
-
-    for (nextIndex, text) in zip(1...characters.count, characters) {
-        recursion(text, nextIndex: nextIndex)
-    }
-
-    return substrings.count
 }
 
-print(countSubstrings(from: readLine()!))
+print(substrings.count)
