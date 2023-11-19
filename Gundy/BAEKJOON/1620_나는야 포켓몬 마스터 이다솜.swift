@@ -1,18 +1,24 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var encyclopedia = Array(repeating: "", count: input[0] + 1)
-var hash = [String: Int]()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var numbers = [String: Int]()
+var names = [Int: String]()
 
 for number in 1...input[0] {
-    let pokemon = readLine()!
-    encyclopedia[number] = pokemon
-    hash[pokemon] = number
+    let name = readLine()!
+    
+    numbers[name] = number
+    names[number] = name
 }
 
+var result = String()
+
 for _ in 1...input[1] {
-    let quiz = readLine()!
-    if let number = Int(quiz) {
-        print(encyclopedia[number])
+    let input = readLine()!
+    
+    if let number = Int(input) {
+        result += names[number]! + "\n"
     } else {
-        print(hash[quiz]!)
+        result += String(numbers[input]!) + "\n"
     }
 }
+
+print(result)
