@@ -1,27 +1,34 @@
 import Foundation
 
-let range = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var primeNumbers = [Int]()
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }
+var result = String()
 
-for number in range[0]...range[1] {
-    if isPrime(number: number) {
-        primeNumbers.append(number)
-    }
-}
-
-for number in primeNumbers {
-    print(number)
-}
-
-func isPrime(number: Int) -> Bool {
-    guard number > 3 else { return number != 1 }
-    for divisor in 2...number {
-        if number % divisor == 0 {
-            return false
+for number in numbers[0]...numbers[1] {
+    guard number > 3 else {
+        if number != 1 {
+            result += "\(number)\n"
         }
-        guard Double(divisor) <= sqrt(Double(number)) else {
+        
+        continue
+    }
+    
+    var isValid = true
+    
+    for divisor in 2...number - 1 {
+        guard Double(divisor) <= sqrt(Double(number)) else { break }
+        
+        guard number % divisor != 0 else {
+            isValid = false
+            
             break
         }
     }
-    return true
+    
+    if isValid {
+        result += "\(number)\n"
+        
+        continue
+    }
 }
+
+print(result)
