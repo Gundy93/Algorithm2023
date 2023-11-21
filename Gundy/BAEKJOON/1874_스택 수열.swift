@@ -1,48 +1,24 @@
-struct Stack<DataType> {
-    private(set) var values: [DataType] = []
+let count = Int(readLine()!)!
+var stack = [Int]()
+var numbers = Array(stride(from: count, through: 1, by: -1))
+var result = String()
+
+loop: for _ in 1...count {
+    let target = Int(readLine()!)!
     
-    mutating func push(_ value: DataType) {
-        values.append(value)
+    while stack.last != target {
+        guard let number = numbers.popLast() else {
+            result = "NO"
+            
+            break loop
+        }
+        
+        stack.append(number)
+        result += "+\n"
     }
     
-    mutating func pop() -> DataType? {
-        return values.popLast()
-    }
+    stack.removeLast()
+    result += "-\n"
 }
 
-func solution() {
-    var stack = Stack<Int>()
-    var numbers: [Int] = []
-    var numberSequence: [Int] = []
-    var result: [String] = []
-    let size = Int(readLine()!)!
-
-    for number in 1...size {
-        numbers.append(number)
-        numberSequence.append(Int(readLine()!)!)
-    }
-    numbers = numbers.reversed()
-    
-    for number in numberSequence {
-        while stack.values.contains(number) == false {
-            guard let last = numbers.popLast() else {
-                print("NO")
-                return
-            }
-            stack.push(last)
-            result.append("+")
-        }
-        guard let value = stack.pop(),
-              value == number else {
-            print("NO")
-            return
-        }
-        result.append("-")
-    }
-    
-    for text in result {
-        print(text)
-    }
-}
-
-solution()
+print(result)
