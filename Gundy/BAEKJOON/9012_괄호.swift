@@ -1,27 +1,25 @@
-func solution() {
-    let count: Int = Int(readLine()!)!
-    for _ in 1...count {
-        let text: String = readLine()!
-        var stack: [Character] = []
-        for character in text {
-            switch character {
-            case "(":
-                stack.append(character)
-            default:
-                if stack.last == "(" {
-                    stack.removeLast()
-                } else {
-                    stack.append(character)
-                    break
-                }
-            }
-        }
-        if stack.isEmpty {
-            print("YES")
-        } else {
-            print("NO")
+func validatePS(_ text: String) -> Bool {
+    var stack = [Character]()
+    
+    for word in text {
+        switch word {
+        case ")":
+            guard stack.last == "(" else { return false }
+            
+            stack.removeLast()
+        default:
+            stack.append(word)
         }
     }
+    
+    return stack.isEmpty
 }
 
-solution()
+let count = Int(readLine()!)!
+var result = String()
+
+for _ in 1...count {
+    result += validatePS(readLine()!) ? "YES\n" : "NO\n"
+}
+
+print(result)
