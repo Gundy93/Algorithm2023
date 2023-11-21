@@ -1,42 +1,31 @@
-func solution() {
-    while true {
-        let text: String = readLine()!
-        if text == "." {
-            break
-        }
-        var stack: [Character] = []
-        for character in text {
-            switch character {
-            case "(":
-                stack.append(character)
-            case ")":
-                if stack.last == "(" {
-                    stack.removeLast()
-                } else {
-                    stack.append(character)
-                    break
-                }
-            case "[":
-                stack.append(character)
-            case "]":
-                if stack.last == "[" {
-                    stack.removeLast()
-                } else {
-                    stack.append(character)
-                    break
-                }
-            default:
-                if character == "." {
-                    break
-                }
-            }
-        }
-        if stack.isEmpty {
-            print("yes")
-        } else {
-            print("no")
+func validate(_ text: String) -> Bool {
+    var stack = [Character]()
+    
+    for word in text {
+        switch word {
+        case "(", "[":
+            stack.append(word)
+        case ")":
+            guard stack.last == "(" else { return false }
+            
+            stack.removeLast()
+        case "]":
+            guard stack.last == "[" else { return false }
+            
+            stack.removeLast()
+        default:
+            continue
         }
     }
+    
+    return stack.isEmpty
 }
 
-solution()
+var result = String()
+
+while let text = readLine(),
+      text != "." {
+    result += validate(text) ? "yes\n" : "no\n"
+}
+
+print(result)
