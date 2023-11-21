@@ -1,15 +1,16 @@
 let numberOfTowers = Int(readLine()!)!
-let towers = readLine()!.split(separator: " ").compactMap({ Int($0) })
 var result = Array(repeating: "0", count: numberOfTowers)
-var stack = [(tower: Int, index: Int)]()
+var stack = [(height: Int, index: Int)]()
 
-for (index, tower) in towers.enumerated().reversed() {
+for (index, height) in readLine()!.split(separator: " ").map({ Int($0)! }).enumerated().reversed() {
     while stack.isEmpty == false,
-          stack.last!.tower < tower {
+          stack.last!.height < height {
         let last = stack.removeLast()
+        
         result[last.index] = String(index + 1)
     }
-    stack.append((tower, index))
+    
+    stack.append((height, index))
 }
 
 print(result.joined(separator: " "))
