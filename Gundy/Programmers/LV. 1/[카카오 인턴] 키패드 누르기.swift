@@ -1,45 +1,62 @@
 func solution(_ numbers:[Int], _ hand:String) -> String {
-    var leftHand: (x: Int, y: Int) = (0, 3)
-    var rightHand: (x: Int, y: Int) = (2, 3)
-    var result: [String] = []
+    let numberPad = [[1,2,3],[4,5,6],[7,8,9],[10,0,11]]
+    var points = [Int: (row: Int, column: Int)]()
+    
+    for row in 0...3 {
+        for column in 0...2 {
+            let number = numberPad[row][column]
+                
+            points[number] = (row, column)
+        }
+    }
+    
+    var distances = Array(repeating: Array(repeating: 0, count: 10), count: 12)
+    
+    for start in 0...11 {
+        for end in 0...9 {
+            let startPoint = points[start]!
+            let endPoint = points[end]!
+            let distance = abs(startPoint.row - endPoint.row) + abs(startPoint.column - endPoint.column)
+            
+            distances[start][end] = distance
+        }
+    }
+    
+    var result = String()
+    var left = 10
+    var right = 11
+    
     for number in numbers {
-        var x: Int = 0
-        if number % 3 == 2 ||
-            number == 0 {
-            x = 1
-        } else if number % 3 == 0 {
-            x = 2
+        if Set([1,4,7]).contains(number) {
+            result += "L"
+            left = number
+            
+            continue
+        } else if Set([3,6,9]).contains(number) {
+            result += "R"
+            right = number
+            
+            continue
         }
-        var y: Int = (number - 1) / 3
-        if number == 0 {
-            y = 3
-        }
-        if x == 0 {
-            result.append("L")
-            leftHand = (x, y)
-        } else if x == 2 {
-            result.append("R")
-            rightHand = (x, y)
-        } else {
-            let distanceForLeft: Int = x - leftHand.x + abs(y - leftHand.y)
-            let distanceForRight: Int = rightHand.x - x + abs(rightHand.y - y)
-            if distanceForLeft < distanceForRight {
-                result.append("L")
-                leftHand = (x, y)
-            } else if distanceForRight < distanceForLeft {
-                result.append("R")
-                rightHand = (x, y)
+        
+        if distances[left][number] == distances[right][number] {
+            if hand == "left" {
+                result += "L"
+                left = number
             } else {
-                switch hand {
-                case "left":
-                    result.append("L")
-                    leftHand = (x, y)
-                default:
-                    result.append("R")
-                    rightHand = (x, y)
-                }
+                result += "R"
+                right = number
+            }
+        } else {
+            if distances[left][number] < distances[right][number] {
+                result += "L"
+                left = number
+            } else {
+                result += "R"
+                right = number
             }
         }
     }
-    return result.joined()
+    
+    return result
 }
