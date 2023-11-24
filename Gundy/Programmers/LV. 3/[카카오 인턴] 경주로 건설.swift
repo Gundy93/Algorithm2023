@@ -1,115 +1,91 @@
-struct Heap<T> {
-    private var box: [T]
-    private var condition: (T, T) -> Bool
-    var isEmpty: Bool { return box.isEmpty }
-    var count: Int { return box.count}
-
-    init(_ elements: [T] = [], _ condition: @escaping (T, T) -> Bool) {
-        box = elements
-        self.condition = condition
-    }
-
-    private func getSuper(_ index: Int) -> Int {
-        return (index - 1) / 2
-    }
-
-    private func getLeft(_ index: Int) -> Int {
-        return index * 2 + 1
-    }
-
-    private func getRight(_ index: Int) -> Int {
-        return index * 2 + 2
-    }
-
-    mutating func insert(_ newElement: T) {
-        box.append(newElement)
-        guard box.count > 1 else { return }
-        var index = count - 1
-        while index > 0 {
-            let superIndex = getSuper(index)
-            guard condition(box[index], box[superIndex]) else { break }
-            box.swapAt(superIndex, index)
-            index = superIndex
-        }
-    }
-
-    mutating func removeFirst() -> T? {
-        guard count > 1 else { return box.popLast() }
-        box.swapAt(0, count - 1)
-        let element = box.removeLast()
-        var index = 0
-        while index < count - 1 {
-            var superIndex = index
-            let left = getLeft(index)
-            let right = getRight(index)
-            if left < count, condition(box[left], box[superIndex]) {
-                superIndex = left
-            }
-            if right < count, condition(box[right], box[superIndex]) {
-                superIndex = right
-            }
-            guard index != superIndex else { break }
-            box.swapAt(index, superIndex)
-            index = superIndex
-        }
-        return element
-    }
-}
-
 enum Direction: CaseIterable {
     case up
     case down
     case left
     case right
-
-    var move: (x: Int, y: Int) {
+    
+    var nextRow: Int {
         switch self {
         case .up:
-            return (0, -1)
+            return -1
         case .down:
-            return (0, 1)
+            return 1
         case .left:
-            return (-1, 0)
+            return 0
         case .right:
-            return (1, 0)
+            return 0
         }
     }
-
-    func isConer(_ direction: Direction) -> Bool {
+    var nextcolumn: Int {
         switch self {
-        case .up, .down:
-            return direction == .left || direction == .right
-        case .left, .right:
-            return direction == .up || direction == .down
+        case .up:
+            return 0
+        case .down:
+            return 0
+        case .left:
+            return -1
+        case .right:
+            return 1
+        }
+    }
+    var reversed: Direction {
+        switch self {
+        case .up:
+            return .down
+        case .down:
+            return .up
+        case .left:
+            return .right
+        case .right:
+            return .left
         }
     }
 }
 
 func solution(_ board:[[Int]]) -> Int {
-    let length = board.count
-    var result = Int.max
-    var needVisit: Heap<(x: Int, y: Int, price: Int, direction: Direction?, visited: [[Bool]])> = Heap([(0, 0, 0, nil, Array(repeating: Array(repeating: false, count: length), count: length))]) { return $0.price < $1.price }
-    var visited = [[Int]: Int]()
-    while needVisit.isEmpty == false {
-        let now = needVisit.removeFirst()!
-        guard visited[[now.x, now.y]] == nil || visited[[now.x, now.y]]! + 500 >= now.price else { continue }
-        if visited[[now.x, now.y]] == nil || visited[[now.x, now.y]]! > now.price {
-            visited[[now.x, now.y]] = now.price
-        }
-        if now.x == length - 1, now.y == length - 1 {
-            if result > now.price {
-                result = now.price
-            }
-            continue
-        }
-        for direction in Direction.allCases {
-            let x = now.x + direction.move.x
-            let y = now.y + direction.move.y
-            guard x >= 0, x < length, y >= 0, y < length, board[x][y] == 0, now.visited[x][y] == false else { continue }
-            var visited = now.visited
-            visited[x][y] = true
-            needVisit.insert((x, y, now.direction?.isConer(direction) == true ? now.price + 600 : now.price + 100, direction, visited))
+    var costs: [[[Direction: Int]]] = Array(repeating: Array(repeating: [:], count: board.count), count: board.count)
+    
+    for direction in Direction.allCases {
+        costs[0][0][direction] = 0
+    }
+    
+    func calculateCost(_ current: Direction?, _ next: Direction) -> Int {
+        guard current != next else { return 100 }
+        
+        switch (current, next) {
+        case (nil, _):
+            return 100
+        default:
+            return 600
         }
     }
-    return result
+    
+    var needVisit = Set([[0, 0]])
+    
+    while needVisit.isEmpty == false {
+        let current = needVisit.removeFirst()
+        let row = current[0]
+        let column = current[1]
+        
+        guard current != [board.count - 1, board.count - 1] else { continue }
+        
+        for direction in Direction.allCases {
+            let nextRow = row + direction.nextRow
+            let nextColumn = column + direction.nextcolumn
+            
+            guard (nextRow == 0 && nextColumn == 0) == false,
+                  nextRow >= 0, nextRow < board.count,
+                  nextColumn >= 0, nextColumn < board.count,
+                  board[nextRow][nextColumn] == 0 else { continue }
+            
+            let newCost = Direction.allCases.map { costs[row][column][$0, default: 375000] + calculateCost($0, direction) }.min()!
+            
+            guard newCost < costs[nextRow][nextColumn][direction, default: 375000] else { continue }
+            
+            costs[nextRow][nextColumn][direction] = newCost
+            needVisit.insert([nextRow, nextColumn])
+        }
+    }
+    
+    return Direction.allCases.compactMap { costs[board.count - 1][board.count - 1][$0] }.min()!
 }
