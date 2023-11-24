@@ -1,23 +1,15 @@
-func solution() {
-    let count: Int = Int(readLine()!)!
-    let numbers: [Int] = readLine()!.split(separator: " ").map{ Int($0)! }
-    var stack: [(Int, Int)] = [(0, numbers[0])]
-    var result: [String] = .init(repeating: "-1", count: count)
-    
-    for index in 1..<count {
-        if stack.isEmpty {
-            stack.append((index, numbers[index]))
-        } else {
-            while stack.last!.1 < numbers[index] {
-                result[stack.removeLast().0] = String(numbers[index])
-                if stack.isEmpty {
-                    break
-                }
-            }
-            stack.append((index, numbers[index]))
-        }
+let count = Int(readLine()!)! 
+var result = Array(repeating: "-1", count: count)
+var stack = [(index: Int, value: Int)]()
+
+for (index, value) in readLine()!.split(separator: " ").map({ Int($0)! }).enumerated() {
+    while let last = stack.last,
+          last.value < value {
+        result[last.index] = String(value)
+        stack.removeLast()
     }
-    print(result.joined(separator: " "))
+    
+    stack.append((index, value))
 }
 
-solution()
+print(result.joined(separator: " "))
