@@ -1,24 +1,21 @@
-func solution() {
-    let count: Int = Int(readLine()!)!
-    var result: Int = 0
-    var stack: [Int] = []
-    for _ in 1...count {
-        let value: Int = Int(readLine()!)!
-        while stack.isEmpty == false {
-            if stack.last! <= value {
-                stack.removeLast()
-                result += stack.count
-            } else {
-                break
-            }
-        }
-        stack.append(value)
-    }
-    while stack.isEmpty == false {
+let numberOfBuildings = Int(readLine()!)!
+var stack = [Int]()
+var result = 0
+
+for _ in 1...numberOfBuildings {
+    let building = Int(readLine()!)!
+    
+    while let last = stack.last,
+          last <= building {
         stack.removeLast()
         result += stack.count
     }
-    print(result)
+    
+    stack.append(building)
 }
 
-solution()
+while let last = stack.popLast() {
+    result += stack.count
+}
+
+print(result)
