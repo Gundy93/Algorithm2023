@@ -1,18 +1,19 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var result = [String]()
+var result = String()
 
-func recursion(_ numbers: [String]) {
-    if numbers.count == input[1] {
-        result.append(numbers.joined(separator: " "))
+func recursion(_ numbers: [Int], _ count: Int, _ maximum: Int) {
+    guard numbers.count < count else {
+        result += numbers.map(String.init).joined(separator: " ") + "\n"
+        
         return
     }
-    for number in 1...input[0] {
-        recursion(numbers + [String(number)])
+    
+    for number in 1...maximum {
+        recursion(numbers + [number], count, maximum)
     }
 }
 
-recursion([])
+let input = readLine()!.split(separator: " ").map { Int($0)! }
 
-for numbers in result {
-    print(numbers)
-}
+recursion([], input[1], input[0])
+
+print(result)
