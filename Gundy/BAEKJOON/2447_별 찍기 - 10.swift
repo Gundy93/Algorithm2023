@@ -1,30 +1,26 @@
-func solution() {
-    let length = Int(readLine()!)!
-    var stars = Array(repeating: Array(repeating: " ", count: length), count: length)
-    func recursion(origin point: (row: Int, column: Int), _ length: Int) {
-        if length == 3 {
-            for deltaY in 0...2 {
-                for deltaX in 0...2 {
-                    if deltaY == 1,
-                       deltaX == 1 {
-                        continue
-                    }
-                    stars[point.row + deltaY][point.column + deltaX] = "*"
-                }
-            }
-        } else {
-            for (deltaY, deltaX) in zip([0, 0, 0,
-                                         length / 3, length / 3,
-                                         (length / 3) * 2, (length / 3) * 2, (length / 3) * 2],
-                                        [0, length / 3, (length / 3) * 2,
-                                         0, (length / 3) * 2,
-                                         0, length / 3, (length / 3) * 2]) {
-                recursion(origin: (point.row + deltaY, point.column + deltaX), length / 3)
-            }
+let count = Int(readLine()!)!
+var stars = Array(repeating: Array(repeating: " ", count: count), count: count)
+
+func recursion(_ row: Int, _ column: Int, _ term: Int) {
+    guard  term > 1 else {
+        stars[row][column] = "*"
+        
+        return
+    }
+    
+    for x in stride(from: 0, to: term, by: term / 3) {
+        for y in stride(from: 0, to: term, by: term / 3) {
+            guard (x == term / 3 && y == term / 3) == false else { continue }
+            
+            recursion(row + x, column + y, term / 3)
         }
     }
-    recursion(origin: (0, 0), length)
-    stars.forEach({ print($0.joined()) })
 }
 
-solution()
+recursion(0, 0, count)
+
+var result = String()
+
+stars.forEach { result += $0.joined() + "\n" }
+
+print(result)
