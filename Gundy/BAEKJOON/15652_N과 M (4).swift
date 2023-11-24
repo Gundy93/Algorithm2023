@@ -1,19 +1,25 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var result = [String]()
+var result = String()
 
-func recursion(_ numbers: [String]) {
-    if numbers.count == input[1] {
-        result.append(numbers.joined(separator: " "))
+func recursion(_ numbers: [Int], _ count: Int, _ maximum: Int) {
+    guard numbers.count < count else {
+        result += numbers.map(String.init).joined(separator: " ") + "\n"
+        
         return
     }
-    let startNumber = numbers.isEmpty ? 1 : Int(numbers.last!)!
-    for number in startNumber...input[0] {
-        recursion(numbers + [String(number)])
+    
+    var start = 1
+    
+    if let last = numbers.last {
+        start = last
+    }
+    
+    for number in stride(from: start, through: maximum, by: 1) {
+        recursion(numbers + [number], count, maximum)
     }
 }
 
-recursion([])
+let input = readLine()!.split(separator: " ").map { Int($0)! }
 
-for numbers in result {
-    print(numbers)
-}
+recursion([], input[1], input[0])
+
+print(result)
