@@ -1,7 +1,10 @@
 let count = Int(readLine()!)!
+var columns = Array(repeating: true, count: count)
+var upwards = Array(repeating: true, count: count * 2 - 1)
+var downwards = Array(repeating: true, count: count * 2 - 1)
 var result = 0
 
-func recursion(_ row: Int, _ columns: [Bool], _ upwards: [Bool], _ downwards: [Bool]) {
+func backTracking(_ row: Int) {
     guard row < count else {
         result += 1
         
@@ -13,22 +16,18 @@ func recursion(_ row: Int, _ columns: [Bool], _ upwards: [Bool], _ downwards: [B
               upwards[row + column],
               downwards[count - 1 - column + row] else { continue }
         
-        var columns = columns
-        var upwards = upwards
-        var downwards = downwards
-        
         columns[column] = false
         upwards[row + column] = false
         downwards[count - 1 - column + row] = false
         
-        recursion(row + 1, columns, upwards, downwards)
+        backTracking(row + 1)
+        
+        columns[column] = true
+        upwards[row + column] = true
+        downwards[count - 1 - column + row] = true
     }
 }
 
-let columns = Array(repeating: true, count: count)
-let upwards = Array(repeating: true, count: count * 2 - 1)
-let downwards = Array(repeating: true, count: count * 2 - 1)
-
-recursion(0, columns, upwards, downwards)
+backTracking(0)
 
 print(result)
