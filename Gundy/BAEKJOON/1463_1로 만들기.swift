@@ -3,7 +3,7 @@ var dp = Array(repeating: Int.max, count: target + 1)
 
 dp[1] = 0
 
-for number in stride(from: 4, through: target, by: 1) {
+for number in stride(from: 2, through: target, by: 1) {
     if number % 6 == 0 {
         dp[number] = min(dp[number - 1], min(dp[number / 2], dp[number / 3])) + 1
     } else if number % 3 == 0 {
