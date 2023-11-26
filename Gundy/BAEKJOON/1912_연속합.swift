@@ -1,17 +1,11 @@
-let countOfNumber = Int(readLine()!)!
-let numbers = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var result = numbers[0]
-var partialResult = numbers[0]
+let count = Int(readLine()!)!
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }
+var dp = Array(repeating: 0, count: count)
 
-for index in 1..<countOfNumber {
-    if partialResult < 0 {
-        partialResult = numbers[index]
-    } else {
-        partialResult += numbers[index]
-    }
-    if partialResult > result {
-        result = partialResult
-    }
+dp[0] = numbers[0]
+
+for index in stride(from: 1, to: count, by: 1) {
+    dp[index] = max(dp[index - 1] + numbers[index], numbers[index])
 }
 
-print(result)
+print(dp.max()!)
