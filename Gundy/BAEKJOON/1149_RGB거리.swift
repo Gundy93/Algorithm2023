@@ -1,29 +1,18 @@
-extension Array {
-    subscript(list index: Index) -> [Int] where Element == [Int] {
-        guard index >= 0 else { return [0, 0, 0] }
-        return self[index]
-    }
+let count = Int(readLine()!)!
+var buildings = [[Int]]()
+
+for _ in 1...count {
+    buildings.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-let numberOfHouse = Int(readLine()!)!
-let houses: [[Int]] = {
-    var houses = [[Int]]()
+var dp = Array(repeating: Array(repeating: 0, count: 3), count: count)
 
-    for _ in 1...numberOfHouse {
-        houses.append(readLine()!.split(separator: " ").compactMap({ Int($0) }))
-    }
+dp[0] = buildings[0]
 
-    return houses
-}()
-var prices = [[Int]]()
-
-for index in 0..<numberOfHouse {
-    var partialPrices = [Int]()
-    let previousPrices = prices[list: index - 1]
-    partialPrices.append(min(previousPrices[1], previousPrices[2]) + houses[index][0])
-    partialPrices.append(min(previousPrices[0], previousPrices[2]) + houses[index][1])
-    partialPrices.append(min(previousPrices[0], previousPrices[1]) + houses[index][2])
-    prices.append(partialPrices)
+for index in stride(from: 1, to: count, by: 1) {
+    dp[index][0] = min(dp[index - 1][1], dp[index - 1][2]) + buildings[index][0]
+    dp[index][1] = min(dp[index - 1][0], dp[index - 1][2]) + buildings[index][1]
+    dp[index][2] = min(dp[index - 1][0], dp[index - 1][1]) + buildings[index][2]
 }
 
-print(prices.last!.sorted().first!)
+print(dp.last!.min()!)
