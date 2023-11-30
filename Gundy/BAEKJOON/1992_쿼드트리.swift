@@ -5,7 +5,6 @@ for _ in 1...length {
     screen.append(readLine()!.map(String.init))
 }
 
-
 func quadTree(_ row: Int, _ column: Int, _ length: Int) -> String {
     guard length > 1 else { return screen[row][column] }
     
