@@ -1,40 +1,40 @@
-var papers = [[Int]]()
+let length = Int(readLine()!)!
+var paper = [[String]]()
 
-for _ in 1...Int(readLine()!)! {
-    papers.append(readLine()!.split(separator: " ").compactMap({ Int($0) }))
+for _ in 1...length {
+    paper.append(readLine()!.split(separator: " ").map(String.init))
 }
 
-let result = recursion(x: 0, y: 0, size: papers.count)
-print(result.negative, result.zero, result.positive, separator: "\n")
-
-func recursion(x: Int, y: Int, size: Int) -> (negative: Int, zero: Int, positive: Int) {
-    guard size > 1 else {
-        switch papers[x][y] {
-        case -1:
-            return (1, 0, 0)
-        case 0:
-            return (0, 1, 0)
-        default:
-            return (0, 0, 1)
+func countPaper(_ row: Int, _ column: Int, _ length: Int) -> (minus: Int, zero: Int, plus: Int) {
+    guard length > 1 else { return paper[row][column] == "0" ? (0,1,0) : paper[row][column] == "1" ? (0,0,1) : (1,0,0) }
+    
+    let term = length / 3
+    let first = countPaper(row, column, term)
+    var isWhole = first.minus + first.zero + first.plus == 1
+    var minus = first.minus
+    var zero = first.zero
+    var plus = first.plus
+    
+    for (row, column) in zip([row, row,
+                              row + term, row + term, row + term,
+                              row + term * 2, row + term * 2, row + term * 2],
+                             [column + term, column + term * 2,
+                              column, column + term, column + term * 2,
+                              column, column + term, column + term * 2]) {
+        let next = countPaper(row, column, term)
+        
+        if isWhole {
+            isWhole = first == next
         }
+        
+        minus += next.minus
+        zero += next.zero
+        plus += next.plus
     }
-    let xPoints = [x, x + size / 3, x + size / 3 * 2,
-                   x, x + size / 3, x + size / 3 * 2,
-                   x, x + size / 3, x + size / 3 * 2]
-    let yPoints = [y, y, y,
-                   y + size / 3, y + size / 3, y + size / 3,
-                   y + size / 3 * 2, y + size / 3 * 2, y + size / 3 * 2]
-    let result = zip(xPoints, yPoints).map({ recursion(x: $0.0, y: $0.1, size: size / 3) })
-    if result[0].negative + result[0].zero + result[0].positive == 1,
-       result.filter({ result[0] == $0 }).count == result.count {
-        return result[0]
-    } else {
-        var partialResult = (0, 0, 0)
-        result.forEach({
-            partialResult.0 += $0.negative
-            partialResult.1 += $0.zero
-            partialResult.2 += $0.positive
-        })
-        return partialResult
-    }
+    
+    return isWhole ? first : (minus, zero, plus)
 }
+
+let result = countPaper(0, 0, length)
+
+print("\(result.minus)\n\(result.zero)\n\(result.plus)")
