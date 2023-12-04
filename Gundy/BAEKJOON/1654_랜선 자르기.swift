@@ -1,28 +1,23 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var lanLines = [Int]()
+let NK = readLine()!.split(separator: " ").map { Int($0)! }
+var lines = [Int]()
 
-for _ in 1...input[0] {
-    lanLines.append(Int(readLine()!)!)
+for _ in 1...NK[0] {
+    lines.append(Int(readLine()!)!)
 }
 
-lanLines.sort()
+lines.sort()
 
-print(solution())
+var start = 1
+var end = lines.last!
 
-func numberOfLanLine(longgerThan length: Int) -> Int {
-    return lanLines.map({ $0 / length }).reduce(0, +)
-}
-
-func solution() -> Int {
-    var start = 1
-    var end = lanLines[lanLines.count - 1]
-    while start <= end {
-        let half = (start + end) / 2
-        if numberOfLanLine(longgerThan: half) >= input[1] {
-            start = half + 1
-        } else {
-            end = half - 1
-        }
+while start < end {
+    let half = (start + end + 1) / 2
+    
+    if lines.map({ $0 / half }).reduce(0, +) >= NK[1] {
+        start = half
+    } else {
+        end = half - 1
     }
-    return end
 }
+
+print(end)
