@@ -1,11 +1,24 @@
 let _ = readLine()
-let list = Set(readLine()!.split(separator: " ").map { Int($0)! })
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }.sorted()
 let _ = readLine()
-let numbers = readLine()!.split(separator: " ").map { Int($0)! }
+let targets = readLine()!.split(separator: " ").map { Int($0)! }
 var result = String()
 
-for number in numbers {
-    result += "\(list.contains(number) ? 1 : 0)\n"
+for target in targets {
+    var start = 0
+    var end = numbers.count - 1
+    
+    while start < end {
+        let half = (start + end) / 2
+        
+        if numbers[half] < target {
+            start = half + 1
+        } else {
+            end = half
+        }
+    }
+    
+    result += numbers[end] == target ? "1\n" : "0\n"
 }
 
 print(result)
