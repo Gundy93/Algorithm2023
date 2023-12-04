@@ -5,10 +5,8 @@ for _ in 1...NK[0] {
     lines.append(Int(readLine()!)!)
 }
 
-lines.sort()
-
 var start = 1
-var end = lines.last!
+var end = lines.max()!
 
 while start < end {
     let half = (start + end + 1) / 2
