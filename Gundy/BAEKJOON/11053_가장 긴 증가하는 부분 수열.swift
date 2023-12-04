@@ -1,9 +1,26 @@
 let count = Int(readLine()!)!
 var numbers = readLine()!.split(separator: " ").map { Int($0)! }
-var dp = Array(repeating: 1, count: count)
+var lis = [numbers[0]]
 
 for index in stride(from: 1, to: count, by: 1) {
-    stride(from: 0, to: index, by: 1).filter { numbers[$0] < numbers[index] }.forEach { dp[index] = max(dp[index], dp[$0] + 1) }
+    if lis.last! < numbers[index] {
+        lis.append(numbers[index])
+    } else {
+        var start = 0
+        var end = lis.count - 1
+        
+        while start < end {
+            let half = (start + end) / 2
+            
+            if lis[half] < numbers[index] {
+                start = half + 1
+            } else {
+                end = half
+            }
+        }
+        
+        lis[end] = numbers[index]
+    }
 }
 
-print(dp.max()!)
+print(lis.count)
