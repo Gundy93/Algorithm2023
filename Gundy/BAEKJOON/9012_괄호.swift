@@ -1,13 +1,12 @@
-func validatePS(_ text: String) -> Bool {
+func isVPS(_ text: String) -> Bool {
     var stack = [Character]()
     
     for word in text {
-        switch word {
-        case ")":
+        if word == ")" {
             guard stack.last == "(" else { return false }
             
             stack.removeLast()
-        default:
+        } else {
             stack.append(word)
         }
     }
@@ -19,7 +18,7 @@ let count = Int(readLine()!)!
 var result = String()
 
 for _ in 1...count {
-    result += validatePS(readLine()!) ? "YES\n" : "NO\n"
+    result += isVPS(readLine()!) ? "YES\n" : "NO\n"
 }
 
 print(result)
