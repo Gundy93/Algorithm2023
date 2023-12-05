@@ -56,16 +56,16 @@ struct Heap<T> {
 }
 
 let count = Int(readLine()!)!
-var maxHeap = Heap<Int>(<)
+var minHeap = Heap<Int>(<)
 var result = String()
 
 for _ in 1...count {
     let number = Int(readLine()!)!
     
     if number == 0 {
-        result += "\(maxHeap.removeFirst() ?? 0)\n"
+        result += "\(minHeap.removeFirst() ?? 0)\n"
     } else {
-        maxHeap.insert(number)
+        minHeap.insert(number)
     }
 }
 
