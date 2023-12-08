@@ -36,4 +36,17 @@ if isValid {
     }
 }
 
-print(isValid ? stack.compactMap(Int.init).reduce(0, +) : 0)
+var result = 0
+
+if isValid {
+    for number in stack {
+        guard let number = Int(number) else {
+            result = 0
+            break
+        }
+        
+        result += number
+    }
+}
+
+print(result)
