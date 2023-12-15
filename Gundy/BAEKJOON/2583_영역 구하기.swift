@@ -1,78 +1,60 @@
-extension Array {
-    subscript(safe index: Index) -> Element? {
-        guard index >= 0,
-              index < count else { return nil }
-        return self[index]
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var board = Array(repeating: Array(repeating: 0, count: input[1] + 1), count: input[0] + 1)
+
+for _ in 1...input[2] {
+    let rectangle = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    board[rectangle[1]][rectangle[0]] += 1
+    board[rectangle[1]][rectangle[2]] -= 1
+    board[rectangle[3]][rectangle[0]] -= 1
+    board[rectangle[3]][rectangle[2]] += 1
+}
+
+for row in 0...input[0] - 1 {
+    for column in stride(from: 1, to: input[1], by: 1) {
+        board[row][column] += board[row][column - 1]
     }
 }
 
-struct Queue<T> {
-    private var left = [T]()
-    private var right: [T]
-    var isEmpty: Bool {
-        return left.isEmpty && right.isEmpty
-    }
-
-    init(_ elements: [T] = []) {
-        right = elements
-    }
-
-    mutating func enqueue(_ element: T) {
-        right.append(element)
-    }
-
-    mutating func dequeue() -> T? {
-        if left.isEmpty {
-            if right.isEmpty {
-                return nil
-            }
-            left = right.reversed()
-            right = []
-        }
-        return left.removeLast()
+for column in 0...input[1] - 1 {
+    for row in stride(from: 1, to: input[0], by: 1) {
+        board[row][column] += board[row - 1][column]
     }
 }
 
-func solution() {
-    let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-    let height = input[0]
-    let width = input[1]
-    let numberOfSquares = input[2]
-    var paper = Array(repeating: Array(repeating: true, count: width), count: height)
-    for _ in 1...numberOfSquares {
-        let square = readLine()!.split(separator: " ").compactMap({ Int($0) })
-        for row in square[1]..<square[3] {
-            for column in square[0]..<square[2] {
-                paper[row][column] = false
+var result = [Int]()
+var visited = Array(repeating: Array(repeating: false, count: input[1]), count: input[0])
+
+for row in 0...input[0] - 1 {
+    for column in 0...input[1] - 1 {
+        guard board[row][column] == 0,
+              visited[row][column] == false else { continue }
+        
+        var stack = [(row, column)]
+        var count = 0
+        
+        while let (row, column) = stack.popLast() {
+            guard visited[row][column] == false else { continue }
+            
+            visited[row][column] = true
+            
+            guard board[row][column] == 0 else { continue }
+            
+            count += 1
+            
+            for (nextRow, nextColumn) in zip([-1, 1, 0, 0], [0, 0, -1, 1]) {
+                let row = row + nextRow
+                let column = column + nextColumn
+                
+                guard 0...input[0] - 1 ~= row,
+                      0...input[1] - 1 ~= column else { continue }
+                
+                stack.append((row, column))
             }
         }
+        
+        result.append(count)
     }
-    var result = [Int]()
-    var visited = Array(repeating: Array(repeating: false, count: width), count: height)
-    for row in 0..<height {
-        for column in 0..<width {
-            guard visited[row][column] == false,
-                  paper[row][column] else { continue }
-            var temporary = 0
-            var needVisit = [(row, column)]
-            while needVisit.isEmpty == false {
-                let point = needVisit.removeLast()
-                guard visited[point.0][point.1] == false else { continue }
-                visited[point.0][point.1] = true
-                temporary += 1
-                for (x, y) in zip([0, 0, 1, -1],
-                                  [1, -1, 0, 0]) {
-                    if paper[safe: point.0 + x]?[safe: point.1 + y] == true,
-                       visited[point.0 + x][point.1 + y] == false {
-                        needVisit.append((point.0 + x, point.1 + y))
-                    }
-                }
-            }
-            result.append(temporary)
-        }
-    }
-    print(result.count)
-    print(result.sorted().map({ "\($0)" }).joined(separator: " "))
 }
 
-solution()
+print("\(result.count)\n\(result.sorted().map(String.init).joined(separator: " "))")
