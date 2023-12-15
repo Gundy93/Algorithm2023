@@ -1,15 +1,18 @@
-let count = Int(readLine()!)! 
-var result = Array(repeating: "-1", count: count)
-var stack = [(index: Int, value: Int)]()
+let count = Int(readLine()!)!
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }
+var NGE = Array(repeating: "-1", count: count)
+var stack = [Int]()
 
-for (index, value) in readLine()!.split(separator: " ").map({ Int($0)! }).enumerated() {
+for index in 0...count - 1 {
+    let number = numbers[index]
+    
     while let last = stack.last,
-          last.value < value {
-        result[last.index] = String(value)
+          numbers[last] < number {
+        NGE[last] = String(number)
         stack.removeLast()
     }
     
-    stack.append((index, value))
+    stack.append(index)
 }
 
-print(result.joined(separator: " "))
+print(NGE.joined(separator: " "))
