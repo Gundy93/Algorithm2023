@@ -1,48 +1,54 @@
-extension Array {
-    subscript(safe index: Index) -> Element? {
-        guard index >= 0,
-              index < count else { return nil }
-        return self[index]
-    }
+let count = Int(readLine()!)!
+var result = String()
+
+for _ in 1...count {
+    result += "\(solution())\n"
 }
 
-func solution() {
-    let times = Int(readLine()!)!
-    for _ in 1...times {
-        let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-        let width = input[0]
-        let height = input[1]
-        let numberOfCabagges = input[2]
-        var field = Array(repeating: Array(repeating: 0, count: height), count: width)
-        for _ in 1...numberOfCabagges {
-            let point = readLine()!.split(separator: " ").compactMap({ Int($0) })
-            let x = point[0]
-            let y = point[1]
-            field[x][y] = 1
+print(result)
+
+func solution() -> Int {
+    let input = readLine()!.split(separator: " ").map { Int($0)! }
+    var board = Array(repeating: Array(repeating: false, count: input[1]), count: input[0])
+    
+    for _ in 1...input[2] {
+        let point = readLine()!.split(separator: " ").map { Int($0)! }
+        
+        board[point[0]][point[1]] = true
+    }
+    
+    var visited = Array(repeating: Array(repeating: false, count: input[1]), count: input[0])
+    
+    func dfs(_ row: Int, _ column: Int) {
+        guard visited[row][column] == false else { return }
+        
+        visited[row][column] = true
+        
+        guard board[row][column] else { return }
+        
+        for (nextRow, nextColumn) in zip([-1, 1, 0, 0], [0, 0, -1, 1]) {
+            let row = row + nextRow
+            let column = column + nextColumn
+            
+            guard row >= 0, row < input[0],
+                  column >= 0, column < input[1],
+                  visited[row][column] == false else { continue }
+            
+            dfs(row, column)
         }
-        var visited = Array(repeating: Array(repeating: false, count: height), count: width)
-        var result = 0
-        for row in 0..<width {
-            for column in 0..<height {
-                guard field[row][column] == 1,
-                      visited[row][column] == false else { continue }
-                var needVisit = [(row, column)]
-                while needVisit.isEmpty == false {
-                    let point = needVisit.removeLast()
-                    guard field[point.0][point.1] == 1,
-                          visited[point.0][point.1] == false else { continue }
-                    visited[point.0][point.1] = true
-                    for (x, y) in zip([0, 0, 1, -1], [1, -1, 0, 0]) {
-                        if visited[safe: point.0 + x]?[safe: point.1 + y] == false {
-                            needVisit.append((point.0 + x, point.1 + y))
-                        }
-                    }
-                }
-                result += 1
+    }
+    
+    var count = 0
+    
+    for row in 0...input[0] - 1 {
+        for column in 0...input[1] - 1 {
+            if board[row][column],
+               visited[row][column] == false {
+                count += 1
+                dfs(row, column)
             }
         }
-        print(result)
     }
+    
+    return count
 }
-
-solution()
