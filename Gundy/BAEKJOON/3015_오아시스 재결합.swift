@@ -1,15 +1,15 @@
 let count = Int(readLine()!)!
-var stack = [Int(readLine()!)!]
+var stack = [Int]()
 var result = 0
 
-for _ in stride(from: 2, through: count, by: 1) {
-    let person = Int(readLine()!)!
+for _ in 1...count {
+    let number = Int(readLine()!)!
     
-    while let last = stack.last {
-        if last < person {
+    while let last = stack.last{
+        if last < number {
             result += 1
             stack.removeLast()
-        } else if last > person {
+        } else if last > number {
             result += 1
             
             break
@@ -18,20 +18,22 @@ for _ in stride(from: 2, through: count, by: 1) {
             var end = stack.count - 1
             
             while start < end {
-                let index = (start + end + 1) / 2
+                let mid = (start + end + 1) / 2
                 
-                if stack[index] > last {
-                    start = index
+                if stack[mid] > last {
+                    start = mid
                 } else {
-                    end = index - 1
+                    end = mid - 1
                 }
             }
+            
             result += stack.count - start
             
             break
         }
     }
-    stack.append(person)
+    
+    stack.append(number)
 }
 
 print(result)
