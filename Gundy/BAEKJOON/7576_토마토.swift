@@ -1,94 +1,95 @@
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        guard self.count > index && index >= 0 else {
-            return nil
-        }
-        return self[index]
-    }
-}
-
 struct Queue<T> {
-    private var left: [T] = []
-    private var right: [T] = []
-    var isEmpty: Bool {
-        return left.isEmpty && right.isEmpty
+    
+    final class Node {
+        
+        let value: T
+        var next: Node?
+        
+        init(value: T) {
+            self.value = value
+        }
     }
     
-    mutating func enqueue(_ value: T) {
-        right.append(value)
+    private var head: Node?
+    private var tail: Node?
+    var first: T? {
+        return head?.value
+    }
+    var last: T? {
+        return tail?.value
+    }
+    var isEmpty: Bool {
+        return head == nil
+    }
+    
+    mutating func enqueue(_ newElement: T) {
+        let node = Node(value: newElement)
+        
+        guard let lastNode = tail else {
+            head = node
+            tail = node
+            
+            return
+        }
+        
+        lastNode.next = node
+        tail = node
     }
     
     mutating func dequeue() -> T? {
-        if left.isEmpty {
-            left = right.reversed()
-            right = []
+        let element = first
+        
+        if head?.next == nil {
+            tail = nil
         }
-        return left.popLast()
+        
+        head = head?.next
+        
+        return element
     }
 }
 
-func solution() {
-    let size: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) })
-    var tomatos: [[Int]] = []
-    for _ in 1...size[1] {
-        tomatos.append(readLine()!.split(separator: " ").compactMap({ Int($0) }))
-    }
-    var visited: [[Bool]] = Array(repeating: Array(repeating: false, count: size[0]), count: size[1])
-    var days: [[Int]] = Array(repeating: Array(repeating: 0, count: size[0]), count: size[1])
-    var needVisit: Queue<[Int]> = Queue()
-    for x in 0...size[1]-1 {
-        for y in 0...size[0]-1 {
-            if tomatos[x][y] == 1 {
-                days[x][y] = 1
-                needVisit.enqueue([x, y])
-            } else if tomatos[x][y] == -1 {
-                days[x][y] = -1
-            }
-        }
-    }
-    while needVisit.isEmpty == false {
-        let point = needVisit.dequeue()!,
-            x = point[0],
-            y = point[1]
-        if visited[x][y] {
-            continue
-        }
-        visited[x][y] = true
-        if visited[x][safe: y-1] == false,
-           tomatos[x][y-1] != -1 {
-            needVisit.enqueue([x, y-1])
-            if days[x][y-1] == 0 {
-                days[x][y-1] = days[x][y] + 1
-            }
-        }
-        if visited[x][safe: y+1] == false,
-           tomatos[x][y+1] != -1 {
-            needVisit.enqueue([x, y+1])
-            if days[x][y+1] == 0 {
-                days[x][y+1] = days[x][y] + 1
-            }
-        }
-        if visited[safe: x-1]?[y] == false,
-           tomatos[x-1][y] != -1 {
-            needVisit.enqueue([x-1, y])
-            if days[x-1][y] == 0 {
-                days[x-1][y] = days[x][y] + 1
-            }
-        }
-        if visited[safe: x+1]?[y] == false,
-           tomatos[x+1][y] != -1 {
-            needVisit.enqueue([x+1, y])
-            if days[x+1][y] == 0 {
-                days[x+1][y] = days[x][y] + 1
-            }
-        }
-    }
-    let dayList: [Int] = days.flatMap({ $0 }).sorted()
-    guard dayList.contains(0) == false else {
-        print(-1)
-        return
-    }
-    print(dayList.last! - 1)
+let size = readLine()!.split(separator: " ").map { Int($0)! }
+let width = size[0]
+let height = size[1]
+var box = [[Int]]()
+
+for _ in 1...height {
+    box.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-solution()
+var queue = Queue<(row: Int, column: Int)>()
+
+for row in 0...height - 1 {
+    for column in 0...width - 1 {
+        if box[row][column] == 1 {
+            queue.enqueue((row, column))
+        }
+    }
+}
+
+var result = 0
+let delta = zip([-1, 1, 0, 0], [0, 0, -1, 1])
+
+while let (row, column) = queue.dequeue() {
+    let number = box[row][column]
+    
+    for (deltaRow, deltaColumn) in delta {
+        let nextRow = row + deltaRow
+        let nextColumn = column + deltaColumn
+        
+        guard 0...height - 1 ~= nextRow,
+              0...width - 1 ~= nextColumn,
+              box[nextRow][nextColumn] == 0 else { continue }
+        
+        result = max(result, number)
+        box[nextRow][nextColumn] = number + 1
+        queue.enqueue((nextRow, nextColumn))
+    }
+}
+
+if Set(box.flatMap { $0 }).contains(0) {
+    print(-1)
+} else {
+    print(result)
+}
