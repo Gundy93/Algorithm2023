@@ -1,76 +1,54 @@
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        guard self.count > index && index >= 0 else {
-            return nil
-        }
-        return self[index]
-    }
+let delta = zip([-1, 1, 0, 0], [0, 0, -1, 1])
+let length = Int(readLine()!)!
+var land = [[Int]]()
+
+for _ in 1...length {
+    land.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-struct Queue<T> {
-    private var left: [T] = []
-    private var right: [T] = []
-    var isEmpty: Bool {
-        return left.isEmpty && right.isEmpty
-    }
-    
-    mutating func enqueue(_ value: T) {
-        right.append(value)
-    }
-    
-    mutating func dequeue() -> T? {
-        if left.isEmpty {
-            left = right.reversed()
-            right = []
-        }
-        return left.popLast()
-    }
-}
+let heights = land.flatMap { $0 }.sorted()
+let minimum = heights.first!
+let maximum = heights.last!
 
-func solution() {
-    var length: Int = Int(readLine()!)!
-    var townMap: [[Int]] = []
-    for _ in 1...length {
-        let row: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) })
-        townMap.append(row)
+func countSafeAreas(_ height: Int) -> Int {
+    var visited = Array(repeating: Array(repeating: false, count: length), count: length)
+    var result = 0
+    
+    func dfs(_ row: Int, _ column: Int) {
+        guard 0...length - 1 ~= row,
+              0...length - 1 ~= column,
+              visited[row][column] == false else { return }
+        
+        visited[row][column] = true
+        
+        guard land[row][column] > height else { return }
+        
+        for (deltaRow, deltaColumn) in delta {
+            let nextRow = row + deltaRow
+            let nextColumn = column + deltaColumn
+            
+            dfs(nextRow, nextColumn)
+        }
     }
-    let maximumHeight: Int = townMap.flatMap({ $0 }).sorted().last! - 1
-    let axisX: [Int] = [0, 0, 1, -1]
-    let axisY: [Int] = [1, -1, 0, 0]
-    var result: [Int] = []
-    for rainHeight in 0...maximumHeight {
-        var visited: [[Bool]] = Array(repeating: Array(repeating: false, count: length), count: length)
-        var needVisit: Queue<[Int]> = Queue()
-        var count: Int = 0
-        for x in 0..<length {
-            for y in 0..<length {
-                var isValidArea: Bool = false
-                guard visited[x][y] == false else { continue }
-                if townMap[x][y] > rainHeight {
-                    needVisit.enqueue([x, y])
-                }
-                while needVisit.isEmpty == false {
-                    let position: [Int] = needVisit.dequeue()!
-                    let x: Int = position[0]
-                    let y: Int = position[1]
-                    guard visited[x][y] == false else { continue }
-                    visited[x][y] = true
-                    isValidArea = true
-                    for (deltaX, deltaY) in zip(axisX, axisY) {
-                        if let height = townMap[safe: x + deltaX]?[safe: y + deltaY],
-                           height > rainHeight {
-                            needVisit.enqueue([x + deltaX, y + deltaY])
-                        }
-                    }
-                }
-                if isValidArea {
-                    count += 1
-                }
+    
+    for row in 0...length - 1 {
+        for column in 0...length - 1 {
+            guard visited[row][column] == false else { continue }
+            
+            if land[row][column] > height {
+                result += 1
+                dfs(row, column)
             }
         }
-        result.append(count)
     }
-    print(result.sorted().last!)
+    
+    return result
 }
 
-solution()
+var result = 1
+
+for height in stride(from: minimum, to: maximum, by: 1) {
+    result = max(result, countSafeAreas(height))
+}
+
+print(result)
