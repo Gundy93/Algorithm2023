@@ -1,29 +1,27 @@
-func recursion(startNumber: Int, length: Int, row: Int, column: Int) -> Int {
-    if length == 1 {
-        switch (row, column) {
-        case (0, 0):
-            return startNumber
-        case (0, 1):
-            return startNumber + 1
-        case (1, 0):
-            return startNumber + 2
-        default:
-            return startNumber + 3
-        }
+import Foundation
+
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let length = Int(pow(2.0, Double(input[0])))
+var result = 0
+
+func recursion(_ row: Int, _ column: Int, _ term: Int, _ number: Int) {
+    guard row...row + term * 2 ~= input[1],
+          column...column + term * 2 ~= input[2] else { return }
+    
+    guard term > 0 else {
+        result = number
+        
+        return
     }
-    switch ((row < length / 2), (column < length / 2)) {
-    case (true, true):
-        return recursion(startNumber: startNumber, length: length / 2, row: row, column: column)
-    case (true, false):
-        return recursion(startNumber: startNumber + (length * length / 4), length: length / 2, row: row, column: column - (length / 2))
-    case (false, true):
-        return recursion(startNumber: startNumber + (length * length / 2), length: length / 2, row: row - (length / 2), column: column)
-    default:
-        return recursion(startNumber: startNumber + (length * length * 3 / 4), length: length / 2, row: row - (length / 2), column: column - (length / 2))
-    }
+    
+    let delta = term * term
+    
+    recursion(row, column, term / 2, number)
+    recursion(row, column + term, term / 2, number + delta)
+    recursion(row + term, column, term / 2, number + delta * 2)
+    recursion(row + term, column + term, term / 2, number + delta * 3)
 }
-let input: [Int] = readLine()!.split(separator: " ").compactMap({ Int($0) })
-print(recursion(startNumber: 0,
-                length: Array(repeating: 2, count: input[0]).reduce(1, *),
-                row: input[1],
-                column: input[2]))
+
+recursion(0, 0, length / 2, 0)
+
+print(result)
