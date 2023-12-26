@@ -1,11 +1,10 @@
 struct Heap<T> {
-    private(set) var box: [T]
+    private(set) var box: [T] = []
     private var condition: (T, T) -> Bool
     var isEmpty: Bool { return box.isEmpty }
     var count: Int { return box.count }
     
-    init(_ elements: [T] = [], _ condition: @escaping (T, T) -> Bool) {
-        box = elements
+    init(_ condition: @escaping (T, T) -> Bool) {
         self.condition = condition
     }
     
@@ -56,25 +55,30 @@ struct Heap<T> {
     }
 }
 
-let input = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-let numberOfPoints = input[0]
-let numberOfLinks = input[1]
+let input = readLine()!.split(separator: " ").map { Int($0)! }
 let start = Int(readLine()!)!
-var costs = Array(repeating: [Int: Int](), count: numberOfPoints + 1)
-for _ in 1...numberOfLinks {
-    let link = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    costs[link[0]][link[1]] = min(link[2], costs[link[0]][link[1], default: Int.max])
+var graph = [Int: [(point: Int, value: Int)]]()
+
+for _ in 1...input[1] {
+    let link = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    graph[link[0], default: []].append((link[1], link[2]))
 }
-var needVisit = Heap([(start, 0)]) { $0.1 < $1.1 }
-var costForStart = Array(repeating: Int.max, count: numberOfPoints + 1)
-while needVisit.isEmpty == false {
-    let now = needVisit.removeFirst()!
-    guard costForStart[now.0] > now.1 else { continue }
-    costForStart[now.0] = now.1
-    for key in costs[now.0].keys {
-        needVisit.insert((key, now.1 + costs[now.0][key]!))
+
+var result = Array(repeating: Int.max, count: input[0] + 1)
+
+var heap = Heap<(point: Int, value: Int)>() { $0.value < $1.value }
+
+heap.insert((start, 0))
+
+while let (point, value) = heap.removeFirst() {
+    guard value < result[point] else { continue }
+    
+    result[point] = value
+    
+    for (next, extra) in graph[point, default: []] {
+        heap.insert((next, value + extra))
     }
 }
-for point in 1...numberOfPoints {
-    print(costForStart[point] == Int.max ? "INF" : costForStart[point])
-}
+
+print(result[1...input[0]].map { $0 == Int.max ? "INF" : String($0) }.joined(separator: "\n"))
