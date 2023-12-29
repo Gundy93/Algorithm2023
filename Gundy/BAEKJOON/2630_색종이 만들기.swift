@@ -1,33 +1,36 @@
 let length = Int(readLine()!)!
-var paper = [[String]]()
+var paper = [[Int]]()
 
 for _ in 1...length {
-    paper.append(readLine()!.split(separator: " ").map(String.init))
+    paper.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-func countPapers(_ row: Int, _ column: Int, _ length: Int) -> (zero: Int, one: Int) {
-    guard length > 1 else { return paper[row][column] == "0" ? (1,0) : (0,1) }
+func cutPaper(at point: (Int, Int), size: Int) -> (white: Int, blue: Int) {
+    let (row, column) = point
     
-    let first = countPapers(row, column, length / 2)
-    var isWholePaper = first.zero + first.one == 1
-    var zero = first.zero
-    var one = first.one
+    guard size > 1 else { return paper[row][column] == 0 ? (1, 0) : (0, 1) }
     
-    for (row, column) in zip([row + length / 2, row, row + length / 2],
-                             [column, column + length / 2, column + length / 2]) {
-        let next = countPapers(row, column, length / 2)
+    let halfSize = size / 2
+    let leftUp = cutPaper(at: point, size: halfSize)
+    var isWholePaper = leftUp.white + leftUp.blue == 1
+    var count = leftUp
+    
+    for (deltaRow, deltaColumn) in [(0, halfSize), (halfSize, 0), (halfSize, halfSize)] {
+        let nextRow = row + deltaRow
+        let nextColumn = column + deltaColumn
+        let next = cutPaper(at: (nextRow, nextColumn), size: halfSize)
         
         if isWholePaper {
-            isWholePaper = first == next
+            isWholePaper = leftUp == next
         }
         
-        zero += next.zero
-        one += next.one
+        count.white += next.white
+        count.blue += next.blue
     }
     
-    return isWholePaper ? first : (zero, one)
+    return isWholePaper ? leftUp : count
 }
 
-let result = countPapers(0, 0, length)
+let result = cutPaper(at: (0, 0), size: length)
 
-print("\(result.zero)\n\(result.one)")
+print("\(result.white)\n\(result.blue)")
