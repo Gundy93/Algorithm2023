@@ -1,29 +1,32 @@
-let length = Int(readLine()!)!
-var screen = [[String]]()
+let size = Int(readLine()!)!
+var screen = [[Character]]()
 
-for _ in 1...length {
-    screen.append(readLine()!.map(String.init))
+for _ in 1...size {
+    screen.append(Array(readLine()!))
 }
 
-func quadTree(_ row: Int, _ column: Int, _ length: Int) -> String {
-    guard length > 1 else { return screen[row][column] }
+func compressImage(at point: (Int, Int), size: Int) -> String {
+    let (row, column) = point
     
-    let first = quadTree(row, column, length / 2)
-    var isWhole = first.count == 1
-    var result = first
+    guard size > 1 else { return String(screen[row][column]) }
     
-    for (row, column) in zip([row, row + length / 2, row + length / 2],
-                             [column + length / 2, column, column + length / 2]) {
-        let next = quadTree(row, column, length / 2)
+    let halfSzie = size / 2
+    let leftUp = compressImage(at: point, size: halfSzie)
+    var isWholeImage = leftUp.count == 1
+    var result = leftUp
+    
+    for (deltaRow, deltaColumn) in [(0, halfSzie), (halfSzie, 0), (halfSzie, halfSzie)] {
+        let next = compressImage(at: (row + deltaRow, column + deltaColumn),
+                                 size: halfSzie)
         
-        if isWhole {
-            isWhole = first == next
+        if isWholeImage {
+            isWholeImage = leftUp == next
         }
         
         result += next
     }
     
-    return isWhole ? first : "(\(result))"
+    return isWholeImage ? leftUp : "(\(result))"
 }
 
-print(quadTree(0, 0, length))
+print(compressImage(at: (0, 0), size: size))
