@@ -1,4 +1,4 @@
-let MAX = 99999999
+let MAX = Int.max - 10000
 let input = readLine()!.split(separator: " ").map { Int($0)! }
 let (N, M) = (input[0], input[1])
 var buses = [(Int, Int, Int)]()
