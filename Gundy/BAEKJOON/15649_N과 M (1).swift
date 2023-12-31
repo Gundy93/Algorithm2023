@@ -3,7 +3,7 @@ var numbers = [String]()
 var hasNumber = Set<Int>()
 var result = String()
 
-func backtracking(start: Int) {
+func backtracking() {
     guard numbers.count < input[1] else {
         result += numbers.joined(separator: " ") + "\n"
         
@@ -15,12 +15,12 @@ func backtracking(start: Int) {
         
         numbers.append(String(number))
         hasNumber.insert(number)
-        backtracking(start: number + 1)
+        backtracking()
         hasNumber.remove(number)
         numbers.removeLast()
     }
 }
 
-backtracking(start: 1)
+backtracking()
 
 print(result)
