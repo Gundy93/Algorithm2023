@@ -1,15 +1,26 @@
-let targetCount = readLine()!.split(separator: " ").compactMap({ Int($0) })[1]
-let numbers = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let numbers = readLine()!.split(separator: " ").map(String.init).sorted { Int($0)! < Int($1)! }
+var stack = [String]()
+var indices = [Int]()
+var result = String()
 
-func backTracking(_ index: Int, _ partialNumbers: [Int]) {
-    if partialNumbers.count == targetCount {
-        print(partialNumbers.map({ String($0) }).joined(separator: " "))
+func backtracking() {
+    guard stack.count < input[1] else {
+        result += stack.joined(separator: " ") + "\n"
+        
         return
     }
-    guard index < numbers.count else { return }
-    for next in index..<numbers.count {
-        backTracking(next, partialNumbers + [numbers[next]])
+    
+    let last = indices.last ?? 0
+    
+    for index in last...input[0] - 1 {
+        indices.append(index)
+        stack.append(numbers[index])
+        backtracking()
+        stack.removeLast()
+        indices.removeLast()
     }
 }
 
-backTracking(0, [])
+backtracking()
+print(result)
