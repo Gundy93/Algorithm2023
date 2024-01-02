@@ -1,28 +1,22 @@
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var numbers = [Int]()
 var result = String()
 
-func recursion(_ numbers: [Int], _ count: Int, _ maximum: Int) {
-    guard numbers.count < count else {
+func backtracking() {
+    guard numbers.count < input[1] else {
         result += numbers.map(String.init).joined(separator: " ") + "\n"
         
         return
     }
     
-    let existing = Set(numbers)
-    var start = 1
+    let last = numbers.last ?? 0
     
-    if let last = numbers.last {
-        start += last
-    }
-    
-    for number in stride(from: start, through: maximum, by: 1) {
-        guard existing.contains(number) == false else { continue }
-        
-        recursion(numbers + [number], count, maximum)
+    for number in stride(from: last + 1, through: input[0], by: 1) {
+        numbers.append(number)
+        backtracking()
+        numbers.removeLast()
     }
 }
 
-let input = readLine()!.split(separator: " ").map { Int($0)! }
-
-recursion([], input[1], input[0])
-
+backtracking()
 print(result)
