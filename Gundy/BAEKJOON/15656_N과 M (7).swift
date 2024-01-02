@@ -1,18 +1,21 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-let numberList = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
-var result = ""
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let numbers = readLine()!.split(separator: " ").map(String.init).sorted { Int($0)! < Int($1)! }
+var stack = [String]()
+var result = String()
 
-func recursion(_ numbers: [String]) {
-    if numbers.count == input[1] {
-        result += numbers.joined(separator: " ") + "\n"
+func backtracking() {
+    guard stack.count < input[1] else {
+        result += stack.joined(separator: " ") + "\n"
+        
         return
     }
-    for index in 0..<input[0] {
-        recursion(numbers + [String(numberList[index])])
+    
+    for index in 0...input[0] - 1 {
+        stack.append(numbers[index])
+        backtracking()
+        stack.removeLast()
     }
 }
 
-recursion([])
-result.removeLast()
-
+backtracking()
 print(result)
