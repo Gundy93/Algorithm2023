@@ -1,7 +1,7 @@
 let input = readLine()!.split(separator: " ").map { Int($0)! }
-let numbers = readLine()!.split(separator: " ").map { Int($0)! }.sorted()
+let numbers = readLine()!.split(separator: " ").map(String.init).sorted { Int($0)! < Int($1)! }
 var stack = [String]()
-var hasNumbers = Set<Int>()
+var used = Array(repeating: false, count: input[0])
 var result = String()
 
 func backtracking() {
@@ -11,14 +11,14 @@ func backtracking() {
         return
     }
     
-    for number in numbers {
-        guard hasNumbers.contains(number) == false else { continue }
+    for index in 0...input[0] - 1 {
+        guard used[index] == false else { continue }
         
-        stack.append(String(number))
-        hasNumbers.insert(number)
+        used[index] = true
+        stack.append(numbers[index])
         backtracking()
-        hasNumbers.remove(number)
         stack.removeLast()
+        used[index] = false
     }
 }
 
