@@ -1,20 +1,24 @@
 let input = readLine()!.split(separator: " ").map { Int($0)! }
-var numbers = [String]()
+let numbers = (1...input[0]).map(String.init)
+var stack = [String]()
+var indices = [Int]()
 var result = String()
 
 func backtracking() {
-    guard numbers.count < input[1] else {
-        result += numbers.joined(separator: " ") + "\n"
+    guard stack.count < input[1] else {
+        result += stack.joined(separator: " ") + "\n"
         
         return
     }
     
-    let last = Int(numbers.last ?? "1")!
+    let last = indices.last ?? 0
     
-    for number in last...input[0] {
-        numbers.append(String(number))
+    for index in last...input[0] - 1 {
+        indices.append(index)
+        stack.append(numbers[index])
         backtracking()
-        numbers.removeLast()
+        stack.removeLast()
+        indices.removeLast()
     }
 }
 
