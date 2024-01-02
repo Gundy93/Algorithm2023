@@ -1,20 +1,26 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-let numberList = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
-var result = [String]()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }.sorted()
+var stack = [String]()
+var hasNumbers = Set<Int>()
+var result = String()
 
-func recursion(_ numbers: [String], _ indicise: [Int]) {
-    if numbers.count == input[1] {
-        result.append(numbers.joined(separator: " "))
+func backtracking() {
+    guard stack.count < input[1] else {
+        result += stack.joined(separator: " ") + "\n"
+        
         return
     }
-    for index in 0..<input[0] {
-        guard indicise.contains(index) == false else { continue }
-        recursion(numbers + [String(numberList[index])], indicise + [index])
+    
+    for number in numbers {
+        guard hasNumbers.contains(number) == false else { continue }
+        
+        stack.append(String(number))
+        hasNumbers.insert(number)
+        backtracking()
+        hasNumbers.remove(number)
+        stack.removeLast()
     }
 }
 
-recursion([], [])
-
-for numbers in result {
-    print(numbers)
-}
+backtracking()
+print(result)
