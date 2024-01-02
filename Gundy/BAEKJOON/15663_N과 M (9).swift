@@ -1,19 +1,32 @@
-let targetCount = readLine()!.split(separator: " ").compactMap({ Int($0) })[1]
-let numbers = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
-var result = Set<[Int]>()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let numbers = readLine()!.split(separator: " ").map(String.init).sorted { Int($0)! < Int($1)! }
+var stack = [String]()
+var used = Array(repeating: false, count: input[0])
+var result = String()
+var checked = Set<String>()
 
-func backTracking(_ indices: [Int]) {
-    if indices.count == targetCount {
-        let numberList = indices.map({ numbers[$0] })
-        guard result.contains(numberList) == false else { return }
-        result.insert(numberList)
-        print(numberList.map({ String($0) }).joined(separator: " "))
+func backtracking() {
+    guard stack.count < input[1] else {
+        let current = stack.joined(separator: " ")
+        
+        if checked.contains(current) == false {
+            checked.insert(current)
+            result += current + "\n"
+        }
+        
         return
     }
-    for nextIndex in 0..<numbers.count {
-        guard indices.contains(nextIndex) == false else { continue }
-        backTracking(indices + [nextIndex])
+    
+    for index in 0...input[0] - 1 {
+        guard used[index] == false else { continue }
+        
+        used[index] = true
+        stack.append(numbers[index])
+        backtracking()
+        stack.removeLast()
+        used[index] = false
     }
 }
 
-backTracking([])
+backtracking()
+print(result)
