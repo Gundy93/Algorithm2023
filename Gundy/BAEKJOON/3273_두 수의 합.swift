@@ -1,13 +1,21 @@
-let _ = readLine()
-let numbers = Set(readLine()!.split(separator: " ").compactMap { Int(String($0)) })
+let count = Int(readLine()!)!
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }.sorted()
 let target = Int(readLine()!)!
+var left = 0
+var right = count - 1
 var result = 0
 
-for number in numbers.sorted() {
-    guard Double(number) < Double(target) / 2 else { break }
+while left < right {
+    let number = numbers[left] + numbers[right]
     
-    if numbers.contains(target - number) {
+    if number == target {
         result += 1
+    }
+    
+    if number <= target {
+        left += 1
+    } else {
+        right -= 1
     }
 }
 
