@@ -1,34 +1,25 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var result = 100000001
-var numbers = readLine()!.split(separator: " ").compactMap({ Int($0) })
-
-var count = 1
-var partialResult = numbers[0]
-if partialResult >= input[1] {
-    result = 1
-}
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }
 var left = 0
 var right = 0
+var partialSum = numbers[0]
+var result = input[0] + 1
 
-while right < numbers.count - 1 {
-    right += 1
-    count += 1
-    partialResult += numbers[right]
-    while partialResult >= input[1],
-          count >= 2 {
-        if count < result {
-            result = count
+while left <= right,
+      result > 1 {
+    if partialSum >= input[1] {
+        result = min(result, right - left + 1)
+        partialSum -= numbers[left]
+        left += 1
+    } else {
+        right += 1
+        
+        if right < input[0] {
+            partialSum += numbers[right]
         } else {
-            partialResult -= numbers[left]
-            left += 1
-            count -= 1
+            break
         }
     }
 }
 
-if partialResult >= input[1],
-   count < result {
-    result = count
-}
-
-print(result == 100000001 ? 0 : result)
+print(result == input[0] + 1 ? 0 : result)
