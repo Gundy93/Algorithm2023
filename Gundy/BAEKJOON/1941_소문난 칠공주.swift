@@ -1,16 +1,16 @@
-var classRoom = [[Character]]()
+var classRoom = [Character]()
 
 for _ in 1...5 {
-    classRoom.append(Array(readLine()!))
+    classRoom += Array(readLine()!)
 }
 
 var stack = [Int]()
-var lee = 0
-var lim = 0
+var sCount = 0
+var yCount = 0
 var result = 0
 
 func backtracking() {
-    guard lim < 4 else { return }
+    guard yCount < 4 else { return }
     
     guard stack.count < 7 else {
         validate()
@@ -20,20 +20,17 @@ func backtracking() {
     
     let last = stack.last ?? -1
     
-    for number in stride(from: last + 1, to: 25, by: 1) {
-        let row = number / 5
-        let column = number % 5
-        
+    for number in last + 1..<25 {
         stack.append(number)
         
-        if classRoom[row][column] == "S" {
-            lee += 1
+        if classRoom[number] == "S" {
+            sCount += 1
             backtracking()
-            lee -= 1
+            sCount -= 1
         } else {
-            lim += 1
+            yCount += 1
             backtracking()
-            lim -= 1
+            yCount -= 1
         }
         
         stack.removeLast()
