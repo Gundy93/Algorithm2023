@@ -1,17 +1,32 @@
+var result = String()
+
 while let input = readLine(),
       input != "0" {
-    let numbers = input.split(separator: " ").compactMap({ Int($0) })
-    func recursion(_ pick: [Int], current index: Int) {
-        guard pick.count < 6 else {
-            print(pick.map(String.init).joined(separator: " "))
+    let numbers = input.split(separator: " ").map(String.init)
+    let maxIndex = Int(numbers[0])!
+    var stack = [String]()
+    var indices = [Int]()
+    
+    func backtracking() {
+        guard stack.count < 6 else {
+            result += stack.joined(separator: " ") + "\n"
+            
             return
         }
-        guard index < numbers.count else {
-            return
+        
+        let last = indices.last ?? 0
+        
+        for index in stride(from: last + 1, through: maxIndex, by: 1) {
+            indices.append(index)
+            stack.append(numbers[index])
+            backtracking()
+            stack.removeLast()
+            indices.removeLast()
         }
-        recursion(pick + [numbers[index]], current: index + 1)
-        recursion(pick, current: index + 1)
     }
-    recursion([], current: 1)
-    print()
+    
+    backtracking()
+    result += "\n"
 }
+
+print(result)
