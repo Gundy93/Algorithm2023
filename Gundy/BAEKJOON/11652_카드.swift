@@ -1,16 +1,8 @@
-var numbers = [Int: Int]()
-let numberOfNumbers = Int(readLine()!)!
+let count = Int(readLine()!)!
+var cards = [Int: Int]()
 
-for _ in 1...numberOfNumbers {
-    let number = Int(readLine()!)!
-    numbers[number, default: 0] += 1
+for _ in 1...count {
+    cards[Int(readLine()!)!, default: 0] += 1
 }
 
-let result = numbers.map({ (number: $0.key, count: $0.value) }).sorted {
-    if $0.count == $1.count {
-        return $0.number < $1.number
-    }
-    return $0.count > $1.count
-}[0].number
-
-print(result)
+print(cards.max { $0.value != $1.value ? $0.value < $1.value : $0.key > $1.key }!.key)
