@@ -1,20 +1,10 @@
-let numberOfGuitars = Int(readLine()!)!
-let guitars: [String] = {
-    var guitars = [String]()
-    for _ in 1...numberOfGuitars {
-        guitars.append(readLine()!)
-    }
+let count = Int(readLine()!)!
+var guitars = [(String, Int)]()
 
-    return guitars
-}()
-let sortedGuitars = guitars.sorted { smallText, bigText in
-    guard smallText.count == bigText.count else { return smallText.count < bigText.count }
-    let smallSum = smallText.compactMap({ Int(String($0)) }).reduce(0, +)
-    let bigSum = bigText.compactMap({ Int(String($0)) }).reduce(0, +)
-    guard smallSum == bigSum else { return smallSum < bigSum }
-    return smallText < bigText
+for _ in 1...count {
+    let guitar = readLine()!
+    let sum = guitar.map(String.init).compactMap(Int.init).reduce(0, +)
+    guitars.append((guitar, sum))
 }
 
-for guitar in sortedGuitars {
-    print(guitar)
-}
+print(guitars.sorted { $0.0.count != $1.0.count ? $0.0.count < $1.0.count : $0.1 != $1.1 ? $0.1 < $1.1 : $0.0 < $1.0 }.map { $0.0 }.joined(separator: "\n"))
