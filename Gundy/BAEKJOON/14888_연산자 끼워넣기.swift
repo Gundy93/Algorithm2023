@@ -1,47 +1,53 @@
-let _ = readLine()
-var numbers = readLine()!.split(separator: " ").map { Int($0)! }
-var operators = readLine()!.split(separator: " ").map { Int($0)! }
 var maximum = Int.min
 var minimum = Int.max
+let countOfNumbers = Int(readLine()!)!
+var numbers = readLine()!.split(separator: " ").map { Int($0)! }
+var signs = readLine()!.split(separator: " ").map { Int($0)! }
 
-func backTracking(_ index: Int) {
-    guard index < numbers.count else {
-        maximum = max(maximum, numbers.last!)
-        minimum = min(minimum, numbers.last!)
+var stack = [(Int, Int)]()
+
+func backtracking() {
+    guard stack.count < countOfNumbers - 1 else {
+        var result = numbers[0]
+        var index = stack.count - 1
+        
+        while index >= 0 {
+            let (number, sign) = stack[index]
+            
+            switch sign {
+            case 0:
+                result += number
+            case 1:
+                result -= number
+            case 2:
+                result *= number
+            default:
+                result /= number
+            }
+            
+            index -= 1
+        }
+        
+        maximum = max(maximum, result)
+        minimum = min(minimum, result)
         
         return
     }
     
-    for operatorIndex in 0...3 {
-        guard operators[operatorIndex] > 0 else { continue }
+    let number = numbers.removeLast()
+    
+    for sign in 0..<4 {
+        guard signs[sign] >= 1 else { continue }
         
-        operators[operatorIndex] -= 1
-        
-        let origin = numbers[index]
-        
-        switch operatorIndex {
-        case 0:
-            numbers[index] += numbers[index - 1]
-            backTracking(index + 1)
-            numbers[index] = origin
-        case 1:
-            numbers[index] = numbers[index - 1] - origin
-            backTracking(index + 1)
-            numbers[index] = origin
-        case 2:
-            numbers[index] *= numbers[index - 1]
-            backTracking(index + 1)
-            numbers[index] = origin
-        default:
-            numbers[index] = numbers[index - 1] / numbers[index]
-            backTracking(index + 1)
-            numbers[index] = origin
-        }
-        
-        operators[operatorIndex] += 1
+        signs[sign] -= 1
+        stack.append((number, sign))
+        backtracking()
+        stack.removeLast()
+        signs[sign] += 1
     }
+    
+    numbers.append(number)
 }
 
-backTracking(1)
-
-print("\(maximum)\n\(minimum)")
+backtracking()
+print(maximum, minimum, separator: "\n")
