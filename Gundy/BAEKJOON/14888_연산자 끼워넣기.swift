@@ -1,13 +1,13 @@
 var maximum = Int.min
 var minimum = Int.max
 let countOfNumbers = Int(readLine()!)!
-var numbers = readLine()!.split(separator: " ").map { Int($0)! }
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }
 var signs = readLine()!.split(separator: " ").map { Int($0)! }
-
+var index = countOfNumbers - 1
 var stack = [(Int, Int)]()
 
 func backtracking() {
-    guard stack.count < countOfNumbers - 1 else {
+    guard index > 0 else {
         var result = numbers[0]
         var index = stack.count - 1
         
@@ -34,7 +34,9 @@ func backtracking() {
         return
     }
     
-    let number = numbers.removeLast()
+    let number = numbers[index]
+    
+    index -= 1
     
     for sign in 0..<4 {
         guard signs[sign] >= 1 else { continue }
@@ -46,7 +48,7 @@ func backtracking() {
         signs[sign] += 1
     }
     
-    numbers.append(number)
+    index += 1
 }
 
 backtracking()
