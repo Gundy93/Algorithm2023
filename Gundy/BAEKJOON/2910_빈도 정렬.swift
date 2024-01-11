@@ -12,4 +12,6 @@ for (index, number) in numbers.enumerated() {
     firstIndices[number] = index
 }
 
-print(numbers.sorted() { counts[$0]! != counts[$1]! ? counts[$0]! > counts[$1]! : firstIndices[$0]! < firstIndices[$1]! }.map(String.init).joined(separator: " "))
+let result = firstIndices.keys.sorted() { counts[$0]! != counts[$1]! ? counts[$0]! > counts[$1]! : firstIndices[$0]! < firstIndices[$1]! }
+
+print(result.map { Array(repeating: String($0), count: counts[$0]!).joined(separator: " ") }.joined(separator: " "))
