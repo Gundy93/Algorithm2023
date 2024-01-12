@@ -1,9 +1,9 @@
-let _ = readLine()
+_ = readLine()
 let numbers = readLine()!.split(separator: " ").map { Int($0)! }
-var indices = [Int: Int]()
+var converter = [Int: Int]()
 
-for number in Set(numbers).sorted().enumerated() {
-    indices[number.element] = number.offset
+for (index, number) in Set(numbers).sorted().enumerated() {
+    converter[number] = index
 }
 
-print(numbers.map { String(indices[$0]!) }.joined(separator: " "))
+print(numbers.map { String(converter[$0]!) }.joined(separator: " "))
