@@ -1,16 +1,14 @@
 let count = Int(readLine()!)!
-var points = [(x: Int, y: Int)]()
+var numbers = [[Int]]()
 
-for _ in 1...count {
-    let point = readLine()!.split(separator: " ").map { Int($0)! }
-    
-    points.append((point[0], point[1]))
+for _ in 0..<count {
+    numbers.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-points.sort { left, right in
-    return left.y == right.y ? left.x < right.x : left.y < right.y
-}
+var result = String()
 
-for point in points {
-    print(point.x, point.y)
-}
+numbers
+    .sorted() { $0[1] != $1[1] ? $0[1] < $1[1] : $0[0] < $1[0] }
+    .forEach { result += "\($0[0]) \($0[1])\n" }
+
+print(result)
