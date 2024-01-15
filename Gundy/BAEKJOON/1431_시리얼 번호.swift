@@ -1,11 +1,22 @@
-let count = Int(readLine()!)!
-var guitars = [(String, Int)]()
-
-for _ in 1...count {
-    let guitar = readLine()!
-    let sum = guitar.map(String.init).compactMap(Int.init).reduce(0, +)
+func serialSort(_ lhs: String, _ rhs: String) -> Bool {
+    guard lhs.count == rhs.count
+    else { return lhs.count < rhs.count }
     
-    guitars.append((guitar, sum))
+    let lhsSum = lhs.compactMap({ Int(String($0)) }).reduce(0, +)
+    let rhsSum = rhs.compactMap({ Int(String($0)) }).reduce(0, +)
+    
+    guard lhsSum == rhsSum
+    else { return lhsSum < rhsSum }
+    
+    return lhs < rhs
 }
 
-print(guitars.sorted { $0.0.count != $1.0.count ? $0.0.count < $1.0.count : $0.1 != $1.1 ? $0.1 < $1.1 : $0.0 < $1.0 }.map { $0.0 }.joined(separator: "\n"))
+let count = Int(readLine()!)!
+var serials = [String]()
+
+(0..<count)
+    .forEach { _ in
+        serials.append(readLine()!)
+    }
+
+print(serials.sorted(by: serialSort).joined(separator: "\n"))
