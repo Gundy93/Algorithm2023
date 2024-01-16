@@ -5,4 +5,4 @@ for _ in 0..<count {
     words.insert(readLine()!)
 }
 
-print(words.sorted { $0.count != $1.count ? $0.count < $1.count : $0 < $1 }.joined(separator: "\n"))
+print(words.sorted { ($0.count, $0) < ($1.count, $1) }.joined(separator: "\n"))
