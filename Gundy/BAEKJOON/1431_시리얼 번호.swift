@@ -4,6 +4,7 @@ var guitars = [(String, Int)]()
 for _ in 1...count {
     let guitar = readLine()!
     let sum = guitar.map(String.init).compactMap(Int.init).reduce(0, +)
+    
     guitars.append((guitar, sum))
 }
 
