@@ -1,7 +1,5 @@
 var numbers = readLine()!.split(separator: " ").map(String.init)
-let count = Int(numbers[0])!
-
-numbers.removeFirst()
+let count = Int(numbers.removeFirst())!
 
 while numbers.count < count {
     numbers += readLine()!.split(separator: " ").map(String.init)
