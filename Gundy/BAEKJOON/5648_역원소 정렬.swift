@@ -1,6 +1,6 @@
-let input = readLine()!.split(separator: " ").map(String.init)
-let count = Int(input[0])!
-var numbers = stride(from: 1, to: input.count, by: 1).map { Int(String(input[$0].reversed()))! }
+var input = readLine()!.split(separator: " ").map(String.init)
+let count = Int(input.removeFirst())!
+var numbers = input.map { Int(String($0.reversed()))! }
 
 while numbers.count < count {
     numbers += readLine()!.split(separator: " ").map { Int(String($0.reversed()))! }
