@@ -1,16 +1,8 @@
 let count = Int(readLine()!)!
 var words = Set<String>()
 
-for _ in 1...count {
+for _ in 0..<count {
     words.insert(readLine()!)
 }
 
-var result = String()
-
-for word in words.sorted(by: { left, right in
-    return left.count == right.count ? left < right : left.count < right.count
-}) {
-    result += word + "\n"
-}
-
-print(result)
+print(words.sorted { $0.count != $1.count ? $0.count < $1.count : $0 < $1 }.joined(separator: "\n"))
