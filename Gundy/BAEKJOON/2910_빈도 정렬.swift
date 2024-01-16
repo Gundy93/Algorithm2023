@@ -1,17 +1,9 @@
-let input = readLine()!.split(separator: " ").map { Int($0)! }
-let numbers = readLine()!.split(separator: " ").map { Int($0)! }
-var counts = [Int: Int]()
-var firstIndices = [Int: Int]()
+_ = readLine()
+let input = readLine()!.split(separator: " ").map(String.init)
+var countAndFirst = [String : (count: Int, first: Int)]()
 
-for (index, number) in numbers.enumerated() {
-    counts[number, default: 0] += 1
-    
-    guard firstIndices[number] == nil
-    else { continue }
-    
-    firstIndices[number] = index
+for index in 0..<input.count {
+    countAndFirst[input[index], default: (0, index)].0 += 1
 }
 
-let result = firstIndices.keys.sorted() { counts[$0]! != counts[$1]! ? counts[$0]! > counts[$1]! : firstIndices[$0]! < firstIndices[$1]! }
-
-print(result.map { Array(repeating: String($0), count: counts[$0]!).joined(separator: " ") }.joined(separator: " "))
+print(countAndFirst.sorted { ($0.value.count, $1.value.first) > ($1.value.count, $0.value.first) }.map { String(repeating: $0.key + " ", count: $0.value.0) }.joined())
