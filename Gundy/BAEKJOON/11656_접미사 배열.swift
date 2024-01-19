@@ -1,8 +1,8 @@
 let input = readLine()!
-var sufficis = [input]
+var sufficis = [String.SubSequence]()
 
-for count in 1..<input.count {
-    sufficis.append(String(input.dropFirst(count)))
+for count in 0..<input.count {
+    sufficis.append(input.dropFirst(count))
 }
 
 sufficis.sort()
