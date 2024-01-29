@@ -1,22 +1,14 @@
 let count = Int(readLine()!)!
-var steps = [Int]()
+var values = [0,0,0]
 
-for _ in 1...count {
-    steps.append(Int(readLine()!)!)
+for _ in 0..<count {
+    values.append(Int(readLine()!)!)
 }
 
-var dp = steps
+var dp = Array(repeating: 0, count: count + 3)
 
-if count > 1 {
-    dp[1] += dp[0]
-}
-
-if count > 2 {
-    dp[2] += max(dp[0], steps[1])
-}
-
-for index in stride(from: 3, to: count, by: 1) {
-    dp[index] += max(dp[index - 2], dp[index - 3] + steps[index - 1])
+for index in 3..<count + 3 {
+    dp[index] = max(dp[index - 3] + values[index - 1], dp[index - 2]) + values[index]
 }
 
 print(dp.last!)
