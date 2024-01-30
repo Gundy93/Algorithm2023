@@ -1,18 +1,17 @@
 let count = Int(readLine()!)!
-var buildings = [[Int]]()
+let (red,green,blue) = (0,1,2)
+var costs = [[Int]]()
 
-for _ in 1...count {
-    buildings.append(readLine()!.split(separator: " ").map { Int($0)! })
+for _ in 0..<count {
+    costs.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-var dp = Array(repeating: Array(repeating: 0, count: 3), count: count)
+var dp = costs
 
-dp[0] = buildings[0]
-
-for index in stride(from: 1, to: count, by: 1) {
-    dp[index][0] = min(dp[index - 1][1], dp[index - 1][2]) + buildings[index][0]
-    dp[index][1] = min(dp[index - 1][0], dp[index - 1][2]) + buildings[index][1]
-    dp[index][2] = min(dp[index - 1][0], dp[index - 1][1]) + buildings[index][2]
+for index in 1..<count {
+    dp[index][red] += min(dp[index-1][green], dp[index-1][blue])
+    dp[index][green] += min(dp[index-1][red], dp[index-1][blue])
+    dp[index][blue] += min(dp[index-1][red], dp[index-1][green])
 }
 
 print(dp.last!.min()!)
