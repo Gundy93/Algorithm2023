@@ -1,8 +1,8 @@
 let n = Int(readLine()!)!
-var dp = Array(repeating: 1, count: n + 1)
+var dp = [1,3]
 
-for index in stride(from: 2, through: n, by: 1) {
-    dp[index] = (dp[index - 1] + dp[index - 2] * 2) % 10007
+while dp.count < n {
+    dp.append((dp[dp.count-1] + dp[dp.count-2] + dp[dp.count-2]) % 10007)
 }
 
-print(dp[n])
+print(dp[n-1])
