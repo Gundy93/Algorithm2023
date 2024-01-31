@@ -1,5 +1,5 @@
-let first = [""] + readLine()!.map(String.init)
-let second = [""] + readLine()!.map(String.init)
+let first = ["0"] + Array(readLine()!)
+let second = ["0"] + Array(readLine()!)
 var dp = Array(repeating: Array(repeating: 0, count: second.count), count: first.count)
 
 for row in 1..<first.count {
