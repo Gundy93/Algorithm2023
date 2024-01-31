@@ -1,16 +1,42 @@
 let count = Int(readLine()!)!
-let numbers = readLine()!.split(separator: " ").map { Int($0)! }
-var dp = numbers.map { [$0] }
+var numbers = readLine()!.split(separator: " ").map { Int($0)! }
+var lis = [numbers[0]]
+var indices = [0]
 
-for right in 0..<count {
-    for left in 0..<right {
-        if numbers[left] < numbers[right],
-           dp[right].count < dp[left].count + 1 {
-            dp[right] = dp[left] + [numbers[right]]
+for index in stride(from: 1, to: count, by: 1) {
+    if lis.last! < numbers[index] {
+        lis.append(numbers[index])
+        indices.append(lis.count - 1)
+    } else {
+        var start = 0
+        var end = lis.count - 1
+        
+        while start < end {
+            let half = (start + end) / 2
+            
+            if lis[half] < numbers[index] {
+                start = half + 1
+            } else {
+                end = half
+            }
         }
+        
+        lis[end] = numbers[index]
+        indices.append(end)
     }
 }
 
-let result = dp.min { $0.count > $1.count }!
+var lisIndex = lis.count - 1
+var result = [Int]()
 
-print("\(result.count)\n\(result.map(String.init).joined(separator: " "))")
+for index in (0..<count).reversed() {
+    if indices[index] == lisIndex {
+        result.append(numbers[index])
+        
+        guard lisIndex > 0 else { break }
+        
+        lisIndex -= 1
+    }
+}
+
+print("\(result.count)\n\(result.reversed().map(String.init).joined(separator: " "))")
