@@ -1,9 +1,8 @@
 let input = readLine()!.split(separator: " ").map { Int($0)! }
-let numbers = readLine()!.split(separator: " ").map { Int($0)! }
 var partialsum = [0]
 
-for index in 0..<input[0] {
-    partialsum.append(partialsum[index] + numbers[index])
+for number in readLine()!.split(separator: " ").map({ Int($0)! }) {
+    partialsum.append(partialsum.last! + number)
 }
 
 var result = ""
