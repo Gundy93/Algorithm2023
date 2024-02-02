@@ -1,21 +1,57 @@
-let target = Int(readLine()!)!
-var dp = [[], [1]]
-
-while dp.count <= target {
-    let number = dp.count
-    var value = dp[number - 1]
+struct Queue<T> {
+    private var input = [T]()
+    private var output = [T]()
     
-    if number % 2 == 0,
-       value.count > dp[number / 2].count {
-        value = dp[number / 2]
+    var first: T? {
+        return output.last ?? input.first
+    }
+    var last: T? {
+        return input.last ?? output.first
+    }
+    var isEmpty: Bool {
+        return input.isEmpty && output.isEmpty
     }
     
-    if number % 3 == 0,
-       value.count > dp[number / 3].count {
-        value = dp[number / 3]
+    mutating func enqueue(_ newElement: T) {
+        input.append(newElement)
     }
     
-    dp.append(value + [number])
+    mutating func dequeue() -> T? {
+        if output.isEmpty {
+            output = input.reversed()
+            input.removeAll()
+        }
+        
+        return output.popLast()
+    }
 }
 
-print("\(dp.last!.count - 1)\n\(dp.last!.reversed().map(String.init).joined(separator: " "))")
+let target = Int(readLine()!)!
+var visited = Set<Int>()
+var queue = Queue<(Int, Int, String)>()
+
+queue.enqueue((target, 0, String(target)))
+
+while let (number, count, path) = queue.dequeue() {
+    guard number > 1 else {
+        print(count, path, separator: "\n")
+        break
+    }
+
+    if number % 3 == 0,
+       visited.contains(number/3) == false {
+        visited.insert(number/3)
+        queue.enqueue((number/3, count+1, path + " " + String(number/3)))
+    }
+
+    if number % 2 == 0,
+       visited.contains(number/2) == false {
+        visited.insert(number/2)
+        queue.enqueue((number/2, count+1, path + " " + String(number/2)))
+    }
+
+    if visited.contains(number-1) == false {
+        visited.insert(number-1)
+        queue.enqueue((number-1, count+1, path + " " + String(number-1)))
+    }
+}
