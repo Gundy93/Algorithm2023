@@ -1,22 +1,22 @@
 let count = Int(readLine()!)!
-var times = [(start: Int, end: Int)]()
+var list = [(end: Int, start: Int)]()
 
-for _ in 1...count {
+for _ in 0..<count {
     let meeting = readLine()!.split(separator: " ").map { Int($0)! }
     
-    times.append((meeting[0], meeting[1]))
+    list.append((meeting[1], meeting[0]))
 }
 
-times.sort { $0.end == $1.end ? $0.start < $1.start : $0.end < $1.end }
+list.sort { $0 < $1 }
 
+var current = list[0].end
 var result = 1
-var last = times[0].end
 
-for index in stride(from: 1, to: count, by: 1) {
-    guard times[index].start >= last else { continue }
-    
-    result += 1
-    last = times[index].end
+for index in 1..<count {
+    if current <= list[index].start {
+        result += 1
+        current = list[index].end
+    }
 }
 
 print(result)
