@@ -1,22 +1,15 @@
-typealias Rope = Int
-
-let numberOfRopes = Int(readLine()!)!
-let ropes: [Rope] = {
-    var ropes = [Rope]()
-
-    for _ in 1...numberOfRopes {
-        ropes.append(Rope(readLine()!)!)
-    }
-
-    return ropes.sorted()
-}()
+let count = Int(readLine()!)!
+var ropes = [Int]()
 var result = 0
 
-for index in 0..<numberOfRopes {
-    let totalStrength = (numberOfRopes - index) * ropes[index]
-    if result < totalStrength {
-        result = totalStrength
-    }
+for _ in 0..<count {
+    ropes.append(Int(readLine()!)!)
+}
+
+ropes.sort()
+
+for index in 0..<count {
+    result = max(result, ropes[index] * (count - index))
 }
 
 print(result)
