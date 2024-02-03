@@ -1,4 +1,7 @@
-let _ = readLine()
-let willSortNumbers = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted()
-let pixedNumbers = readLine()!.split(separator: " ").compactMap({ Int($0) }).sorted(by: >)
-print(zip(willSortNumbers, pixedNumbers).map({ $0.0 * $0.1 }).reduce(0, +))
+_ = Int(readLine()!)!
+let first = readLine()!.split(separator: " ").map { Int($0)! }.sorted()
+let second = readLine()!.split(separator: " ").map { Int($0)! }.sorted(by: >)
+var result = 0
+
+zip(first, second).forEach { result += $0 * $1 }
+print(result)
