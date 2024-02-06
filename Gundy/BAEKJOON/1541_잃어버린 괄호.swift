@@ -1,5 +1,4 @@
-let expression = readLine()!
-let partialSum = expression.split(separator: "-").map { String($0).split(separator: "+").map { Int($0)! }.reduce(0, +) }
+let partialSum = readLine()!.split(separator: "-").map { String($0).split(separator: "+").map { Int($0)! }.reduce(0, +) }
 var result = partialSum[0]
 
 for index in 1..<partialSum.count {
