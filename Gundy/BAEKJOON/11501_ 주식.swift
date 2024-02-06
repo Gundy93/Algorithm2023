@@ -8,15 +8,13 @@ for _ in 0..<count {
     var stack = [(costs[0],0)]
     
     for index in 1..<days {
-        let cost = costs[index]
-        
         while let last = stack.last,
-              last.0 < cost {
+              last.0 < costs[index] {
             stack.removeLast()
             isChip[last.1] = true
         }
         
-        stack.append((cost,index))
+        stack.append((costs[index],index))
     }
     
     var count = 0
