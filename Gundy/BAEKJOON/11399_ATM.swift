@@ -1,8 +1,6 @@
 let count = Int(readLine()!)!
-var times = readLine()!.split(separator: " ").map { Int($0)! }.sorted()
+var times = readLine()!.split(separator: " ").map { Int($0)! }.sorted(by: >)
+var result = 0
 
-for index in 1..<count {
-    times[index] += times[index-1]
-}
-
-print(times.reduce(0, +))
+zip(1...count, times).forEach { result += $0 * $1 }
+print(result)
