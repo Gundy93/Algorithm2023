@@ -1,30 +1,18 @@
-var positive = [0, 1]
-var negative = [0, 1]
+let n = Int(readLine()!)!
+var result = String(n < 0 && n % 2 == 0 ? -1 : n == 0 ? 0 : 1) + "\n"
+var dp = [0, 1]
 
-let target = Int(readLine()!)!
-
-if target == 0 {
-    print(0)
-    print(0)
-}
-
-if abs(target) == 1 {
-    print(1)
-    print(1)
-}
-
-if target > 1 {
-    for index in 2...target {
-        positive.append((positive[index-1] + positive[index-2]) % 1000000000)
+if n > 0 {
+    while dp.count <= n {
+        dp.append((dp[dp.count-2] + dp[dp.count-1]) % 1000000000)
     }
-    print(1)
-    print(positive[target])
+} else {
+    let n = abs(n)
+    
+    while dp.count <= n {
+        dp.append((dp[dp.count-2] - dp[dp.count-1]) % 1000000000)
+    }
 }
 
-if target < -1 {
-    for index in 2...abs(target) {
-        negative.append((negative[index-2] - negative[index-1]) % 1000000000)
-    }
-    print(negative[abs(target)] > 0 ? 1 : -1)
-    print(abs(negative[abs(target)]))
-}
+result += String(abs(dp[abs(n)]))
+print(result)
