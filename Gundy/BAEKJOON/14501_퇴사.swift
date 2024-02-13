@@ -1,23 +1,18 @@
-let days = Int(readLine()!)!
-let quests: [[Int]] = {
-    var quests = [[Int]]()
+let dueDay = Int(readLine()!)!
+var consultings = [[Int]]()
 
-    for _ in 1...days {
-        quests.append(readLine()!.split(separator: " ").compactMap({ Int($0) }))
-    }
-
-    return quests
-}()
-var points = [Int: Set<Int>]()
-
-for currentDay in 0..<days {
-    let dDay = currentDay + quests[currentDay][0]
-    if dDay <= days {
-        let currentPoint = points[currentDay, default: [0]].sorted().last!
-        for day in dDay...days {
-            points[day, default: []].insert(currentPoint + quests[currentDay][1])
-        }
-    }
+for _ in 0..<dueDay {
+    consultings.append(readLine()!.split(separator: " ").map { Int($0)! })
 }
 
-print(points[days, default: [0]].sorted().last!)
+var dp = Array(repeating: 0, count: dueDay+1)
+
+for day in 0..<dueDay {
+    dp[day+1] = max(dp[day+1], dp[day])
+    
+    guard day + consultings[day][0] <= dueDay else { continue }
+    
+    dp[day + consultings[day][0]] = max(dp[day + consultings[day][0]], dp[day] + consultings[day][1])
+}
+
+print(dp.max()!)
