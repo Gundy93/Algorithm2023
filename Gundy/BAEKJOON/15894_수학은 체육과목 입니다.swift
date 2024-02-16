@@ -1,3 +1,1 @@
-let row = Int(readLine()!)!
-
-print(row * 4)
+print(Int(readLine()!)! * 4)
