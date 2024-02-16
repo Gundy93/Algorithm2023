@@ -1,5 +1,9 @@
 let numbers = readLine()!.split(separator: " ").map { Int($0)! }
-let numerator = stride(from: 1, through: numbers[0], by: 1).reduce(1, *)
-let denominator = stride(from: 1, through: numbers[0] - numbers[1], by: 1).reduce(1, *) * stride(from: 1, through: numbers[1], by: 1).reduce(1, *)
+let numerator = numbers[0] > 1 ? (2...numbers[0]).reduce(1, *) : 1
+var denominator = numbers[1] > 1 ? (2...numbers[1]).reduce(1, *) : 1
+
+if numbers[0] - numbers[1] > 1 {
+    denominator *= (2...numbers[0] - numbers[1]).reduce(1, *)
+}
 
 print(numerator / denominator)
