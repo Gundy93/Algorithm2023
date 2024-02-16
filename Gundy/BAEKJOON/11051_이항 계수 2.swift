@@ -1,4 +1,4 @@
-let numbers = readLine()!.split(separator: " ").compactMap({ Int($0) })
+let numbers = readLine()!.split(separator: " ").map { Int($0)! }
 var dp = Array(repeating: Array(repeating: 1, count: numbers[0] + 1), count: numbers[0] + 1)
 
 if numbers[0] > 1 {
