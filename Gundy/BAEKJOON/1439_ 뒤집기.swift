@@ -1,5 +1,5 @@
 let input = readLine()!
-var count = 0
+var count = 1
 var last = input.first!
 
 for word in input {
@@ -9,4 +9,4 @@ for word in input {
     }
 }
 
-print((count+1) / 2)
+print(count / 2)
