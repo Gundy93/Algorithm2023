@@ -1,20 +1,30 @@
-let number = Int(readLine()!)!
-var nodes = Array(repeating: Set<Int>(), count: number + 1)
-for _ in 1...number - 1 {
-    let link = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    nodes[link[0]].insert(link[1])
-    nodes[link[1]].insert(link[0])
+let count = Int(readLine()!)!
+var links = [Int : Set<Int>]()
+
+for _ in 0..<count-1 {
+    let nodes = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    links[nodes[0], default: []].insert(nodes[1])
+    links[nodes[1], default: []].insert(nodes[0])
 }
-var parent = Array(repeating: 0, count: number + 1)
-var visited = Set<Int>()
-var needVisit = nodes[1].map({ ($0, 1) })
-while needVisit.isEmpty == false {
-    let now = needVisit.removeLast()
-    guard visited.contains(now.0) == false else { continue }
-    visited.insert(now.0)
-    parent[now.0] = now.1
-    needVisit += nodes[now.0].map({ ($0, now.0) })
+
+var parents = Array(repeating: 0, count: count+1)
+var nodes = [1]
+var index = 0
+
+parents[1] = 1
+
+while index < nodes.count {
+    let node = nodes[index]
+    
+    index += 1
+    
+    for next in links[node, default: []] {
+        guard parents[next] == 0 else { continue }
+        
+        nodes.append(next)
+        parents[next] = node
+    }
 }
-for node in 2...number {
-    print(parent[node])
-}
+
+print((2...count).map { String(parents[$0]) }.joined(separator: "\n"))
