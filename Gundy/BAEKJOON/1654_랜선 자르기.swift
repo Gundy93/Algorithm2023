@@ -1,21 +1,30 @@
-let NK = readLine()!.split(separator: " ").map { Int($0)! }
-var lines = [Int]()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var lanLines = [Int]()
+var maxLine = Int.min
 
-for _ in 1...NK[0] {
-    lines.append(Int(readLine()!)!)
+for _ in 0..<input[0] {
+    let lanLine = Int(readLine()!)!
+    
+    lanLines.append(lanLine)
+    maxLine = max(maxLine, lanLine)
 }
 
 var start = 1
-var end = lines.max()!
+var end = maxLine + 1
 
 while start < end {
-    let half = (start + end + 1) / 2
+    let length = (start + end + 1) / 2
+    var count = 0
     
-    if lines.map({ $0 / half }).reduce(0, +) >= NK[1] {
-        start = half
+    for lanLine in lanLines {
+        count += lanLine / length
+    }
+    
+    if count >= input[1] {
+        start = length
     } else {
-        end = half - 1
+        end = length - 1
     }
 }
 
-print(end)
+print(start)
