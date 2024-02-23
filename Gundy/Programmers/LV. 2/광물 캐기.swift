@@ -1,19 +1,25 @@
-enum Pick {
+enum Mineral: String {
+    case diamond
+    case iron
+    case stone
+}
+
+enum Pick: Int {
     case diamond
     case iron
     case stone
 
-    func mine(_ mineral: String) -> Int {
+    func mine(_ mineral: Mineral) -> Int {
         switch self {
         case .diamond:
             return 1
         case .iron:
-            return mineral == "diamond" ? 5 : 1
+            return mineral == .diamond ? 5 : 1
         case .stone:
             switch mineral {
-            case "diamond":
+            case .diamond:
                 return 25
-            case "iron":
+            case .iron:
                 return 5
             default:
                 return 1
@@ -23,54 +29,61 @@ enum Pick {
 }
 
 func solution(_ picks:[Int], _ minerals:[String]) -> Int {
+    let minerals = minerals.compactMap(Mineral.init)
     var result = Int.max
-    func recursion(_ now: Pick, _ count: Int, _ picks: [Int], _ minerals: [String], _ fatigue: Int) {
-        guard minerals.isEmpty == false else {
-            if fatigue < result {
-                result = fatigue
-            }
+    var picks = picks
+    var pick = Pick.diamond
+    var mineCount = 0
+    var index = 0
+    var fatigue = 0
+    
+    func backtracking() {
+        guard index < minerals.count else {
+            result = min(result, fatigue)
             return
         }
-        var minerals = minerals
-        let fatigue = fatigue + now.mine(minerals.removeLast())
-        if count == 4 {
-            if picks[0] > 0 {
-                var picks = picks
-                picks[0] -= 1
-                recursion(.diamond, 0, picks, minerals, fatigue)
+        
+        mineCount += 1
+        fatigue += pick.mine(minerals[index])
+        index += 1
+        
+        if mineCount == 5 {
+            let originPick = pick
+            
+            for pickNumber in 0..<3 {
+                guard picks[pickNumber] > 0 else { continue }
+                
+                picks[pickNumber] -= 1
+                pick = Pick(rawValue: pickNumber)!
+                mineCount = 0
+                backtracking()
+                mineCount = 5
+                pick = originPick
+                picks[pickNumber] += 1
             }
-            if picks[1] > 0 {
-                var picks = picks
-                picks[1] -= 1
-                recursion(.iron, 0, picks, minerals, fatigue)
-            }
-            if picks[2] > 0 {
-                var picks = picks
-                picks[2] -= 1
-                recursion(.stone, 0, picks, minerals, fatigue)
-            }
-            if picks.filter({ $0 > 0 }).isEmpty, fatigue < result {
-                result = fatigue
+            
+            if picks.allSatisfy({ $0 == 0 }) {
+                result = min(result, fatigue)
             }
         } else {
-            recursion(now, count + 1, picks, minerals, fatigue)
+            backtracking()
         }
+        index -= 1
+        fatigue -= pick.mine(minerals[index])
+        mineCount -= 1
     }
-    let minerals: [String] = minerals.reversed()
-    if picks[0] > 0 {
-        var picks = picks
-        picks[0] -= 1
-        recursion(.diamond, 0, picks, minerals, 0)
+    
+    for pickNumber in 0..<3 {
+        guard picks[pickNumber] > 0 else { continue }
+        
+        picks[pickNumber] -= 1
+        pick = Pick(rawValue: pickNumber)!
+        mineCount = 0
+        backtracking()
+        mineCount = 5
+        pick = .diamond
+        picks[pickNumber] += 1
     }
-    if picks[1] > 0 {
-        var picks = picks
-        picks[1] -= 1
-        recursion(.iron, 0, picks, minerals, 0)
-    }
-    if picks[2] > 0 {
-        var picks = picks
-        picks[2] -= 1
-        recursion(.stone, 0, picks, minerals, 0)
-    }
+    
     return result
 }
