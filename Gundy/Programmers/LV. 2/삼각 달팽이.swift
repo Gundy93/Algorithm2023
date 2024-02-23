@@ -49,5 +49,5 @@ func solution(_ n:Int) -> [Int] {
     
     recursion(1, 0, 0)
     
-    return snail.flatMap { $0.filter { $0 != 0 } }
+    return snail.flatMap { $0 }
 }
