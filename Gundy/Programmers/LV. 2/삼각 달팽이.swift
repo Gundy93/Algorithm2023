@@ -1,49 +1,53 @@
 enum Direction {
-    case down
+    case leftDown
     case right
-    case up
+    case leftUp
+    
+    var next: Direction {
+        switch self {
+        case .leftDown:
+            return .right
+        case .right:
+            return .leftUp
+        case .leftUp:
+            return .leftDown
+        }
+    }
+    
+    func nextPoint(row: Int, column: Int) -> (Int, Int) {
+        switch self {
+        case .leftDown:
+            return (row+1, column)
+        case .right:
+            return (row, column+1)
+        case .leftUp:
+            return (row-1, column-1)
+        }
+    }
 }
 
 func solution(_ n:Int) -> [Int] {
-    var result = [[Int]]()
-    var count = 0
-    for row in 1...n {
-        count += row
-        let row = Array(repeating: 0, count: row)
-        result.append(row)
-    }
-    var direction = Direction.down
-    var index: (row: Int, column: Int) = (0, 0)
-    var currentCount = 0
-    while currentCount < count {
-        currentCount += 1
-        result[index.row][index.column] = currentCount
-        switch direction {
-        case .down:
-            if index.row + 1 < n,
-               result[index.row + 1][index.column] == 0 {
-                index = (index.row + 1, index.column)
-            } else {
-                direction = .right
-                index = (index.row, index.column + 1)
-            }
-        case .right:
-            if index.column + 1 < result[index.row].count,
-               result[index.row][index.column + 1] == 0 {
-                index = (index.row, index.column + 1)
-            } else {
-                direction = .up
-                index = (index.row - 1, index.column - 1)
-            }
-        case .up:
-            if index.row - 1 >= 0,
-               result[index.row - 1][index.column - 1] == 0 {
-                index = (index.row - 1, index.column - 1)
-            } else {
-                direction = .down
-                index = (index.row + 1, index.column)
-            }
+    var snail = (1...n).map { Array(repeating: 0, count: $0) }
+    var direction = Direction.leftDown
+    
+    func recursion(_ number: Int, _ row: Int, _ column: Int) {
+        snail[row][column] = number
+        
+        let originDirection = direction
+        var next = direction.nextPoint(row: row, column: column)
+        
+        while (0..<n ~= next.0 && 0...next.0 ~= next.1) == false ||
+                snail[next.0][next.1] != 0 {
+            direction = direction.next
+            next = direction.nextPoint(row: row, column: column)
+            
+            if direction == originDirection { return }
         }
+        
+        recursion(number+1, next.0, next.1)
     }
-    return result.flatMap({ $0 })
+    
+    recursion(1, 0, 0)
+    
+    return snail.flatMap { $0.filter { $0 != 0 } }
 }
