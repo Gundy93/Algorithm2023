@@ -1,34 +1,13 @@
 var target = Int(readLine()!)!
-var row = Int()
+var number = 1
 
-for number in 1... {
+while target > number {
     target -= number
-    
-    guard target > 0 else {
-        row = number
-        
-        break
-    }
+    number += 1
 }
 
-target += row
-
-if row % 2 == 1 {
-    var result = (row, 1)
-
-    for _ in stride(from: 2, through: target, by: 1) {
-        result.0 -= 1
-        result.1 += 1
-    }
-
-    print("\(result.0)/\(result.1)")
+if number % 2 == 1 {
+    print(number - target + 1, "/", target, separator: "")
 } else {
-    var result = (1, row)
-
-    for _ in stride(from: 2, through: target, by: 1) {
-        result.0 += 1
-        result.1 -= 1
-    }
-
-    print("\(result.0)/\(result.1)")
-} 
+    print(target, "/", number - target + 1, separator: "")
+}
