@@ -1,17 +1,14 @@
-func isFrime(_ number: Int) -> Bool {
-    guard number > 3 else { return number != 1 }
-    
-    for divisor in 2... {
-        if number % divisor == 0 {
-            return false
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var isPrime = Array(repeating: true, count: input[1]+1)
+
+isPrime[1] = false
+
+for number in 2...input[1] {
+    if isPrime[number] {
+        for notPrimeNumber in stride(from: number * 2, through: input[1], by: number) {
+            isPrime[notPrimeNumber] = false
         }
-        
-        guard divisor * divisor < number else { break }
     }
-    
-    return true
 }
 
-let range = readLine()!.split(separator: " ").map { Int($0)! }
-
-print((range[0]...range[1]).filter(isFrime).map(String.init).joined(separator: "\n"))
+print((input[0]...input[1]).filter { isPrime[$0] }.map(String.init).joined(separator: "\n"))
