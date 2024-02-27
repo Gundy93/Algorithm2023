@@ -1,16 +1,14 @@
-var number = Int(readLine()!)!
+var input = Int(readLine()!)!
+var divisors = [String]()
 
-loop: while number > 1 {
-    for divisor in 2...number {
-        if number % divisor == 0 {
-            print(divisor)
-            number /= divisor
-            
-            continue loop
-        }
+for divisor in 2... {
+    guard divisor <= input else { break }
+    
+    while input % divisor == 0 {
+        input /= divisor
+        divisors.append(String(divisor))
     }
-    
-    print(number)
-    
-    break
 }
+
+
+print(divisors.joined(separator: "\n"))
