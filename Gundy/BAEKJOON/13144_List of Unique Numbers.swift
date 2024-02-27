@@ -4,15 +4,6 @@ var sequence = Set([list[0]])
 var start = 0
 var end = 0
 var result = 0
-var reducedNumber = [0,1,3,6,10]
-
-func getReduced(_ number: Int) -> Int {
-    while reducedNumber.count <= number {
-        reducedNumber.append(reducedNumber.last! + reducedNumber.count)
-    }
-    
-    return reducedNumber[number]
-}
 
 while end+1 < count,
       sequence.contains(list[end+1]) == false {
@@ -33,5 +24,5 @@ while end < count-1 {
     sequence.insert(text)
 }
 
-result += getReduced(sequence.count)
+result += (1...sequence.count).reduce(0, +)
 print(result)
