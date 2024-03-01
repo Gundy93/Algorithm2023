@@ -1,58 +1,40 @@
-func solution() {
-    let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-    let numberOfDishes = input[0]
-    let limit = input[2]
-    let coupon = input[3]
-    var counter = Array(repeating: 0, count: input[1] + 1)
-    var dishes = [Int]()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var sushis = [Int]()
 
-    for _ in 1...numberOfDishes {
-        dishes.append(Int(readLine()!)!)
-    }
-
-    dishes += dishes
-
-    var left = 0
-    var right = 0
-    var result = 1
-    var numberOfKinds = 1
-    counter[dishes[0]] = 1
-
-    if limit == 1,
-       coupon != dishes[0] {
-        result = 2
-    }
-
-    while right < numberOfDishes * 2 - 1,
-          left < numberOfDishes {
-        right += 1
-        counter[dishes[right % numberOfDishes]] += 1
-        if counter[dishes[right % numberOfDishes]] == 1 {
-            numberOfKinds += 1
-        }
-
-        var count = right - left + 1
-
-        if count > limit {
-            counter[dishes[left]] -= 1
-            if counter[dishes[left]] == 0 {
-                numberOfKinds -= 1
-            }
-            left += 1
-            count -= 1
-        }
-
-        if numberOfKinds >= result {
-            var currentResult = numberOfKinds
-            if count == limit,
-               counter[coupon] == 0 {
-                currentResult += 1
-            }
-            result = currentResult
-        }
-    }
-
-    print(result)
+for _ in 0..<input[0] {
+    sushis.append(Int(readLine()!)!)
 }
 
-solution()
+sushis += sushis
+
+var start = 0
+var end = 0
+var result = 1
+var count = 1
+var counter = Array(repeating: 0, count: input[1]+1)
+
+counter[sushis[0]] = 1
+
+while end < sushis.count-1,
+      start < input[0] {
+    end += 1
+    counter[sushis[end]] += 1
+            
+    if counter[sushis[end]] == 1 {
+        count += 1
+    }
+
+    if end - start + 1 > input[2] {
+        counter[sushis[start]] -= 1
+        
+        if counter[sushis[start]] == 0 {
+            count -= 1
+        }
+        
+        start += 1
+    }
+    
+    result = max(result, counter[input[3]] == 0 ? count + 1 : count)
+}
+
+print(result)
