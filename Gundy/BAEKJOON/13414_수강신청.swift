@@ -1,24 +1,28 @@
-let input = readLine()!.split(separator: " ").compactMap({ Int($0) })
-var studentNumbers = [String]()
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var students = [String]()
+var indices = [String : Int]()
 
-for _ in 1...input[1] {
-    studentNumbers.append(readLine()!)
+for index in 0..<input[1] {
+    let student = readLine()!
+    
+    if let index = indices[student] {
+        students[index] = ""
+    }
+    
+    students.append(student)
+    indices[student] = index
 }
 
-studentNumbers.reverse()
+var result = [String]()
+var index = 0
 
-var students = [String: Int]()
-var number = 0
-
-while studentNumbers.isEmpty == false {
-    let student = studentNumbers.removeLast()
-    students[student] = number
-    number += 1
+while result.count < input[0],
+      index < input[1] {
+    if students[index].count == 8 {
+        result.append(students[index])
+    }
+    
+    index += 1
 }
 
-let result = students.sorted(by: { $0.value < $1.value })
-
-for index in 0..<input[0] {
-    guard index < result.count else { break }
-    print(result[index].key)
-}
+print(result.joined(separator: "\n"))
