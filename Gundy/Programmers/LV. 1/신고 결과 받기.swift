@@ -1,23 +1,23 @@
+import Foundation
+
 func solution(_ id_list:[String], _ report:[String], _ k:Int) -> [Int] {
-    var idIndex = [String : Int]()
-    for id in id_list {
-        idIndex[id] = idIndex.count
+    var reports = [String : Set<String>]()
+    
+    for report in report {
+        let ids = report.split(separator: " ").map(String.init)
+        
+        reports[ids[1], default: []].insert(ids[0])
     }
-    var count = [String: Int]()
-    var blacklist = Set<String>()
-    var reports = Array(repeating: Set<String>(), count: id_list.count)
-    report.forEach {
-        let users = $0.split(separator: " ").map(String.initㅋ)
-        let index = idIndex[users[0]]!
-        reports[index].insert(users[1])
-    }
+    
+    var mailCounts = [String : Int]()
+    
     for report in reports {
-        report.forEach {
-            count[$0, default: 0] += 1
-            if count[$0]! >= k {
-                blacklist.insert($0)
+        if report.value.count >= k {
+            for id in report.value {
+                mailCounts[id, default: 0] += 1
             }
         }
     }
-    return reports.map({ $0.intersection(blacklist).count })
+    
+    return id_list.map { mailCounts[$0, default: 0] }
 }
