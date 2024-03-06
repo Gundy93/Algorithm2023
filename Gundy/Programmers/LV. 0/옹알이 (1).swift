@@ -1,25 +1,15 @@
-enum Bab: String {
-    case aya
-    case ye
-    case woo
-    case ma
-}
+import Foundation
 
 func solution(_ babbling:[String]) -> Int {
-    var result: Int = 0
-    for babble in babbling {
-        var text: String = ""
-        for character in babble {
-            text += String(character)
-            if let _ = Bab(rawValue: text) {
-                text = ""
-            } else if text.count > 3 {
-                break
-            }
+    let babbling: [Int] =  babbling.compactMap {
+        var word = $0
+        
+        ["aya", "ye", "woo", "ma"].forEach {
+            word = word.replacingOccurrences(of: $0, with: "0")
         }
-        if text.isEmpty {
-            result += 1
-        }
+        
+        return Int(word)
     }
-    return result
+    
+    return babbling.count
 }
