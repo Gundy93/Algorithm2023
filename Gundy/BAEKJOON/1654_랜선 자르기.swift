@@ -1,30 +1,26 @@
 let input = readLine()!.split(separator: " ").map { Int($0)! }
-var lanLines = [Int]()
-var maxLine = Int.min
+var lanCables = [Int]()
 
 for _ in 0..<input[0] {
-    let lanLine = Int(readLine()!)!
-    
-    lanLines.append(lanLine)
-    maxLine = max(maxLine, lanLine)
+    lanCables.append(Int(readLine()!)!)
 }
 
-var start = 1
-var end = maxLine + 1
+var min = 1
+var max = Int.max-2
 
-while start < end {
-    let length = (start + end + 1) / 2
+while min < max {
+    let length = (min + max + 1) / 2
     var count = 0
     
-    for lanLine in lanLines {
-        count += lanLine / length
+    for cable in lanCables {
+        count += cable / length
     }
     
     if count >= input[1] {
-        start = length
+        min = length
     } else {
-        end = length - 1
+        max = length-1
     }
 }
 
-print(start)
+print(min)
