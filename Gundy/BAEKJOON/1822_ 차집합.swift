@@ -23,4 +23,4 @@ loop: for number in first {
     result.append(String(number))
 }
 
-print(result.count, result.isEmpty ? "" : result.joined(separator: " "), separator: "\n")
+print(result.count, result.joined(separator: " "), separator: "\n")
