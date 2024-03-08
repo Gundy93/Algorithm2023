@@ -1,76 +1,66 @@
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        guard index >= 0,
-              index < count else { return nil }
-        return self[index]
-    }
+import Foundation
+
+enum Direction: Character {
+    case north = "N"
+    case south = "S"
+    case west = "W"
+    case east = "E"
 }
 
 func solution(_ park:[String], _ routes:[String]) -> [Int] {
-    let park: [[Character]] = park.map({ $0.map({ $0 }) })
-    var current: (x: Int, y: Int) = (-1, -1)
-    for y in 0..<park.count {
-        let row: [Character] = park[y]
-        for x in 0..<row.count {
-            if row[x] == "S" {
-                current = (x, y)
-                break
-            }
-        }
-        if current.x != -1 {
-            break
-        }
-    }
-    for route in routes {
-        let command: [String] = route.split(separator: " ").map({ String($0) })
-        let distace: Int = Int(command[1])!
-        var isValid: Bool = true
-        switch command[0] {
-        case "E":
-            for dx in stride(from: 1, through: distace, by: 1) {
-                guard let point = park[current.y][safe: current.x + dx],
-                      point != "X" else {
-                    isValid = false
-                    break
-                }
-            }
-            if isValid {
-                current = (current.x + distace, current.y)
-            }
-        case "W":
-            for dx in stride(from: 1, through: distace, by: 1) {
-                guard let point = park[current.y][safe: current.x - dx],
-                      point != "X" else {
-                    isValid = false
-                    break
-                }
-            }
-            if isValid {
-                current = (current.x - distace, current.y)
-            }
-        case "S":
-            for dy in stride(from: 1, through: distace, by: 1) {
-                guard let point = park[safe: current.y + dy]?[current.x],
-                      point != "X" else {
-                    isValid = false
-                    break
-                }
-            }
-            if isValid {
-                current = (current.x, current.y + distace)
-            }
-        default:
-            for dy in stride(from: 1, through: distace, by: 1) {
-                guard let point = park[safe: current.y - dy]?[current.x],
-                      point != "X" else {
-                    isValid = false
-                    break
-                }
-            }
-            if isValid {
-                current = (current.x, current.y - distace)
+    let park = park.map { $0.map(String.init) }
+    var row = 0
+    var column = 0
+    
+    loop: for y in 0..<park.count {
+        for x in 0..<park.count {
+            if park[y][x] == "S" {
+                row = y
+                column = x
+                break loop
             }
         }
     }
-    return [current.y, current.x]
+    
+    loop: for route in routes {
+        let direction = Direction(rawValue: route.first!)!
+        let distance = Int(String(route.last!))!
+        
+        switch direction {
+        case .north:
+            guard 0..<park.count ~= row - distance else { continue }
+            
+            for row in row - distance...row-1 {
+                guard park[row][column] != "X" else { continue loop }
+            }
+            
+            row -= distance
+        case .south:
+            guard 0..<park.count ~= row + distance else { continue }
+            
+            for row in row+1...row + distance {
+                guard park[row][column] != "X" else { continue loop }
+            }
+            
+            row += distance
+        case .west:
+            guard 0..<park[0].count ~= column - distance else { continue }
+            
+            for column in column - distance...column-1 {
+                guard park[row][column] != "X" else { continue loop }
+            }
+            
+            column -= distance
+        case .east:
+            guard 0..<park[0].count ~= column + distance else { continue }
+            
+            for column in column+1...column + distance {
+                guard park[row][column] != "X" else { continue loop }
+            }
+            
+            column += distance
+        }
+    }
+    
+    return [row, column]
 }
