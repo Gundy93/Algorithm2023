@@ -1,16 +1,25 @@
+import Foundation
+
 func solution(_ players:[String], _ callings:[String]) -> [String] {
-    var playerList: [String] = players
-    var indexList: [String : Int] = [:]
-    for player in players {
-        indexList[player] = indexList.count
+    var players = players
+    var names = [Int : String]()
+    var ranks = [String : Int]()
+    
+    for rank in players.indices {
+        names[rank] = players[rank]
+        ranks[players[rank]] = rank
     }
+    
     for calling in callings {
-        let index: Int = indexList[calling]!
-        let player: String = playerList[index - 1]
-        indexList[player, default: 0] += 1
-        indexList[calling, default: 0] -= 1
-        playerList[index - 1] = calling
-        playerList[index] = player
+        guard let index = ranks[calling] else { continue }
+        let left = players[index-1]
+        ranks[left]? += 1
+        ranks[calling]? -= 1
+        names[index] = left
+        names[index-1] = calling
+        
+        players.swapAt(index-1, index)
     }
-    return playerList
+    
+    return players
 }
