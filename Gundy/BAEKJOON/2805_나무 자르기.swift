@@ -1,16 +1,23 @@
-let NM = readLine()!.split(separator: " ").map { Int($0)! }
-var trees = readLine()!.split(separator: " ").map { Int($0)! }
-var start = 0
-var end = trees.max()!
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+let trees = readLine()!.split(separator: " ").map { Int($0)! }.sorted(by: >)
+var min = 0
+var max = Int.max-1
 
-while start < end {
-    let half = (start + end + 1) / 2
+while min < max {
+    let mid = (min + max + 1) / 2
+    var total = 0
     
-    if trees.map({ $0 > half ? $0 - half : 0 }).reduce(0, +) >= NM[1] {
-        start = half
+    for tree in trees {
+        guard tree  > mid else { break }
+        
+        total += tree - mid
+    }
+    
+    if total >= input[1] {
+        min = mid
     } else {
-        end = half - 1
+        max = mid-1
     }
 }
 
-print(end)
+print(min)
