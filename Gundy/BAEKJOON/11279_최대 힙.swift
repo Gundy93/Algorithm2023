@@ -1,6 +1,7 @@
 struct Heap<T> {
     private(set) var box: [T] = []
     private var condition: (T, T) -> Bool
+    var first: T? { box.first }
     var isEmpty: Bool { return box.isEmpty }
     var count: Int { return box.count }
     
@@ -32,6 +33,7 @@ struct Heap<T> {
         }
     }
     
+    @discardableResult
     mutating func removeFirst() -> T? {
         guard count > 1 else { return box.popLast() }
         box.swapAt(0, count - 1)
@@ -56,16 +58,15 @@ struct Heap<T> {
 }
 
 let count = Int(readLine()!)!
-var maxHeap = Heap<Int>(>)
-var result = String()
+var heap = Heap<Int>(<)
+var result = ""
 
-for _ in 1...count {
-    let number = Int(readLine()!)!
-    
-    if number == 0 {
-        result += "\(maxHeap.removeFirst() ?? 0)\n"
-    } else {
-        maxHeap.insert(number)
+for _ in 0..<count {
+    switch Int(readLine()!)! {
+    case 0:
+        result += String(heap.removeFirst() ?? 0) + "\n"
+    case let number:
+        heap.insert(number)
     }
 }
 
