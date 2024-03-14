@@ -9,7 +9,7 @@ if target >= 2 {
         if isPrime[number] {
             primes.append(number)
             
-            for multiple in stride(from: number*2, through: target, by: number) {
+            for multiple in stride(from: number*number, through: target, by: number) {
                 isPrime[multiple] = false
             }
         }
