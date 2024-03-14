@@ -1,36 +1,28 @@
-let input = readLine()!.split(separator: " ").compactMap { Int($0) }
-var linking = [Int: [Int]]()
-var isVisited = Array(repeating: false, count: input[0] + 1)
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var links = [Int : [Int]]()
+
+for _ in 0..<input[1] {
+    let link = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    links[link[0], default: []].append(link[1])
+    links[link[1], default: []].append(link[0])
+}
+
+var visited = Array(repeating: false, count: input[0]+1)
 var result = 0
 
 for node in 1...input[0] {
-    linking[node] = []
-}
-
-for _ in stride(from: 1, through: input[1], by: 1) {
-    let link = readLine()!.split(separator: " ").compactMap { Int($0) }
-    linking[link[0]]?.append(link[1])
-    linking[link[1]]?.append(link[0])
-}
-
-for node in 1...input[0] {
-    guard isVisited[node] == false else {
-        continue
+    guard visited[node] == false else { continue }
+    
+    var nodes = [node]
+    
+    while let last = nodes.popLast() {
+        guard visited[last] == false else { continue }
+        
+        visited[last] = true
+        nodes += links[last, default: []]
     }
-
-    var needVisit = [node]
-
-    while needVisit.isEmpty == false {
-        let node = needVisit.removeLast()
-
-        guard isVisited[node] == false else {
-            continue
-        }
-
-        isVisited[node] = true
-        needVisit += linking[node]!
-    }
-
+    
     result += 1
 }
 
