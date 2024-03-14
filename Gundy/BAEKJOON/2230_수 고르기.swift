@@ -7,19 +7,23 @@ for _ in 0..<input[0] {
 
 numbers.sort()
 
+var left = 0
+var right = 0
 var result = Int.max
-var start = 0
-var end = 0
 
-while start <= end,
-      end < input[0] {
-    let difference = numbers[end] - numbers[start]
+while right < input[0],
+      left <= right {
+    let number = abs(numbers[left] - numbers[right])
     
-    if difference >= input[1] {
-        result = min(result, difference)
-        start += 1
-    } else {
-        end += 1
+    switch number {
+    case ..<input[1]:
+        right += 1
+    case input[1]:
+        result = number
+        right = input[0]
+    default:
+        result = min(result, number)
+        left += 1
     }
 }
 
