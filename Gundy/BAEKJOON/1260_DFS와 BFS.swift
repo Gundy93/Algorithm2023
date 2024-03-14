@@ -1,50 +1,38 @@
 let input = readLine()!.split(separator: " ").map { Int($0)! }
-var links = [Int: Set<Int>]()
+var links = [Int : Set<Int>]()
 
-for _ in stride(from: 1, through: input[1], by: 1) {
+for _ in 0..<input[1] {
     let link = readLine()!.split(separator: " ").map { Int($0)! }
     
     links[link[0], default: []].insert(link[1])
     links[link[1], default: []].insert(link[0])
 }
 
-func dfs(_ node: Int) -> String {
-    var visited = [Int]()
-    var stack = [node]
+var result = Array(repeating: [String](), count: 2)
+var visited = Array(repeating: false, count: input[0]+1)
+var nodes = [input[2]]
+
+while let last = nodes.popLast() {
+    guard visited[last] == false else { continue }
     
-    while let current = stack.popLast() {
-        guard visited.contains(current) == false else { continue }
-        
-        visited.append(current)
-        
-        for node in links[current, default: []].sorted(by: >) {
-            stack.append(node)
-        }
-    }
-    
-    return visited.map(String.init).joined(separator: " ")
+    visited[last] = true
+    result[0].append(String(last))
+    nodes += links[last, default: []].sorted(by: >)
 }
 
-func bfs(_ node: Int) -> String {
-    var visited = [Int]()
-    var queue = [node]
-    var index = 0
+visited = Array(repeating: false, count: input[0]+1)
+nodes = [input[2]]
+var index = 0
+
+while index < nodes.count {
+    let node = nodes[index]
+    index += 1
     
-    while queue.count > index {
-        let current = queue[index]
-        
-        index += 1
-        
-        guard visited.contains(current) == false else { continue }
-        
-        visited.append(current)
-        
-        for node in links[current, default: []].sorted() {
-            queue.append(node)
-        }
-    }
+    guard visited[node] == false else { continue }
     
-    return visited.map(String.init).joined(separator: " ")
+    visited[node] = true
+    result[1].append(String(node))
+    nodes += links[node, default: []].sorted()
 }
 
-print("\(dfs(input[2]))\n\(bfs(input[2]))")
+print(result.map { $0.joined(separator: " ") }.joined(separator: "\n"))
