@@ -1,20 +1,18 @@
+import Foundation
+
 func solution(_ survey:[String], _ choices:[Int]) -> String {
-    var points = [String: Int]()
+    var points = [Character : Int]()
     
-    for index in 0...survey.count - 1 {
-        var question = survey[index]
-        var choice = choices[index]
-        
-        switch question {
-        case "TR", "FC", "MJ", "NA":
-            choice = 8 - choice
-            question = String(question.reversed())
+    for (survey, choice) in zip(survey, choices) {
+        switch choice {
+        case ...3:
+            points[survey.first!, default: 0] += abs(4-choice)
+        case 4:
+            continue
         default:
-            break
+            points[survey.last!, default: 0] += abs(4-choice)
         }
-        
-        points[question, default: 0] += choice - 4
     }
     
-    return ["RT", "CF", "JM", "AN"].map { String(points[$0, default: 0] == 0 ? $0.sorted().first! : points[$0]! < 0 ? $0.first! : $0.last!) }.joined()
+    return String(["RT", "CF", "JM", "AN"].map { $0.sorted { points[$0, default: 0] > points[$1, default: 0] } }.map { $0.first! })
 }
