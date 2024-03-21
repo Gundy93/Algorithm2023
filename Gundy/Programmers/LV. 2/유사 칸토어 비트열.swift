@@ -1,22 +1,37 @@
 import Foundation
 
 func solution(_ n:Int, _ l:Int64, _ r:Int64) -> Int {
-    let l = Int(l) - 1
-    let r = Int(r)
-    func recursion(_ end: Int) -> Int {
-        guard end > 5 else { return end > 2 ? end - 1: end }
-        var count = 1
-        while Int(pow(5.0, Double(count + 1))) < end {
-            count += 1
-        }
-        let section = end / Int(pow(5.0, Double(count)))
-        let remainder = end % Int(pow(5.0, Double(count)))
-        let result = section >= 3 ? (section - 1) * Int(pow(4.0, Double(count))) : section * Int(pow(4.0, Double(count)))
-        if section == 2 {
+    var dp = [[Int] : Int]()
+    
+    func recursion(_ n: Int, _ left: Int, _ right: Int) -> Int {
+        if let result = dp[[n, left, right]] {
             return result
-        } else {
-            return result + recursion(remainder)
         }
+        
+        guard n > 0 else { return 1 }
+        
+        let length = Array(repeating: 5, count: n-1).reduce(1, *)
+        var count = 0
+        var start = -length
+        var result = 0
+        
+        while count < 5 {
+            count += 1
+            start += length
+            
+            if count == 3 { continue }
+            
+            guard start + length > left else { continue }
+            
+            guard start <= right else { break }
+            
+            result += recursion(n-1, max(left, start) % length, min(right, start + length-1) % length)
+        }
+        
+        dp[[n, left, right]] = result
+        
+        return result
     }
-    return recursion(r) - recursion(l)
+    
+    return recursion(n, Int(l-1), Int(r-1))
 }
