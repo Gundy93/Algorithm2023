@@ -1,26 +1,22 @@
+import Foundation
+
 func solution(_ wallpaper:[String]) -> [Int] {
-    var minX: Int = wallpaper[0].count
-    var maxX: Int = 0
-    var minY: Int = wallpaper.count
-    var maxY: Int = 0
-    for y in 0..<wallpaper.count {
-        let row: [String] = wallpaper[y].map({ String($0) })
-        for x in 0..<row.count {
-            if row[x] == "#" {
-                if x < minX {
-                    minX = x
-                }
-                if x > maxX {
-                    maxX = x
-                }
-                if y < minY {
-                    minY = y
-                }
-                if y > maxY {
-                    maxY = y
-                }
+    let wallpaper = wallpaper.map(Array.init)
+    var lux = Int.max
+    var luy = Int.max
+    var rdx = Int.min
+    var rdy = Int.min
+    
+    for x in 0..<wallpaper.count {
+        for y in 0..<wallpaper[x].count {
+            if wallpaper[x][y] == "#" {
+                lux = min(lux, x)
+                luy = min(luy, y)
+                rdx = max(rdx, x+1)
+                rdy = max(rdy, y+1)
             }
         }
     }
-    return [minY, minX, maxY + 1, maxX + 1]
+    
+    return [lux, luy, rdx, rdy]
 }
