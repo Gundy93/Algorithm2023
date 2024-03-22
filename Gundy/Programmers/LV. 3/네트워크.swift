@@ -1,32 +1,29 @@
+import Foundation
+
 func solution(_ n:Int, _ computers:[[Int]]) -> Int {
-    var links = Array(repeating: Set<Int>(), count: n)
-    for index in 0..<n {
-        let computer = computers[index]
-        for other in 0..<n {
-            if computer[other] == 1 {
-                links[index].insert(other)
-                links[other].insert(index)
-            }
-        }
-    }
-    var visited = Array(repeating: false, count: n)
     var result = 0
-    var needVisit = Set<Int>()
-    for index in 0..<n {
-        guard visited[index] == false else {
-            continue
-        }
-        result += 1
-        visited[index] = true
-        needVisit = links[index]
-        while needVisit.isEmpty == false {
-            let computer = needVisit.removeFirst()
-            guard visited[computer] == false else {
-                continue
-            }
-            visited[computer] = true
-            needVisit = needVisit.union(links[computer])
+    var links = Array(repeating: [Int](), count: n)
+    
+    for computer in 0..<n {
+        for index in 0..<n where computers[computer][index] == 1 {
+            links[computer].append(index)
         }
     }
+    
+    var visited = Set<Int>()
+    
+    for computer in 0..<n where visited.contains(computer) == false {
+        var needVisit = [computer]
+        
+        while let last = needVisit.popLast() {
+            guard visited.contains(last) == false else { continue }
+            
+            visited.insert(last)
+            needVisit += links[last]
+        }
+        
+        result += 1
+    }
+    
     return result
 }
