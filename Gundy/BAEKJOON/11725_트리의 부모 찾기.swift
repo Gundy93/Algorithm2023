@@ -1,30 +1,29 @@
-let count = Int(readLine()!)!
-var links = [Int : Set<Int>]()
-
-for _ in 0..<count-1 {
-    let nodes = readLine()!.split(separator: " ").map { Int($0)! }
+func solution() {
+    let count = Int(readLine()!)!
+    var links = [Int : [Int]]()
     
-    links[nodes[0], default: []].insert(nodes[1])
-    links[nodes[1], default: []].insert(nodes[0])
-}
-
-var parents = Array(repeating: 0, count: count+1)
-var nodes = [1]
-var index = 0
-
-parents[1] = 1
-
-while index < nodes.count {
-    let node = nodes[index]
-    
-    index += 1
-    
-    for next in links[node, default: []] {
-        guard parents[next] == 0 else { continue }
+    for _ in 0..<count-1 {
+        let link = readLine()!.split(separator: " ").map { Int($0)! }
         
-        nodes.append(next)
-        parents[next] = node
+        links[link[0], default: []].append(link[1])
+        links[link[1], default: []].append(link[0])
     }
+    
+    var parents = Array(
+        repeating: 0,
+        count: count+1
+    )
+    
+    func recursion(_ parent: Int, _ node: Int) {
+        parents[node] = parent
+        
+        for next in links[node, default: []] where next != parent {
+            recursion(node, next)
+        }
+    }
+    
+    recursion(0, 1)
+    print((2...count).map { String(parents[$0]) }.joined(separator: "\n"))
 }
 
-print((2...count).map { String(parents[$0]) }.joined(separator: "\n"))
+solution()
