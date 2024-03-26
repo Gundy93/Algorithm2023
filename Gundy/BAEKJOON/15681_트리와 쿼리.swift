@@ -1,38 +1,52 @@
-let numbers = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-let (numberOfNodes, root, query) = (numbers[0], numbers[1], numbers[2])
-var links = [Int: Set<Int>]()
-for _ in 1...numberOfNodes - 1 {
-    let nodes = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    links[nodes[0], default: []].insert(nodes[1])
-    links[nodes[1], default: []].insert(nodes[0])
-}
-var tree = [Int: Set<Int>]()
-var needVisit: [(Int, Int?)] = [(root, nil)]
-while needVisit.isEmpty == false {
-    let current = needVisit.removeLast()
-    for child in links[current.0, default: []] {
-        guard child != current.1 else { continue }
-        tree[current.0, default: []].insert(child)
-        needVisit.append((child, current.0))
+func solution() {
+    let input = readLine()!.split(separator: " ").map { Int($0)! }
+    let count = input[0]
+    let root = input[1]
+    let queries = input[2]
+    var links = [Int : [Int]]()
+    var dp = Array(
+        repeating: 0,
+        count: count+1
+    )
+    var visited = Array(
+        repeating: false,
+        count: count+1
+    )
+    
+    for _ in 1..<count {
+        let link = readLine()!.split(separator: " ").map { Int($0)! }
+        
+        links[link[0], default: []].append(link[1])
+        links[link[1], default: []].append(link[0])
     }
-}
-var count = 0
-var nodes = Array(repeating: 0, count: numberOfNodes + 1)
-var stack = [root]
-func recursion(_ node: Int) -> Int {
-    guard let children = tree[node], children.isEmpty == false else {
-        nodes[node] = 1
-        return 1
+    
+    func countFrom(_ root: Int) -> Int {
+        guard visited[root] == false else { return 0 }
+        
+        visited[root] = true
+        
+        var result = 1
+        
+        for next in links[root, default: []] {
+            result += countFrom(next)
+        }
+        
+        dp[root] = result
+        
+        return result
     }
-    var result = 1
-    for child in children {
-        result += recursion(child)
+    
+    dp[root] = countFrom(root)
+    
+    var result = ""
+    
+    for _ in 0..<queries {
+        let query = Int(readLine()!)!
+        
+        result += String(dp[query]) + "\n"
     }
-    nodes[node] = result
-    return result
+    
+    print(result)
 }
-let _ = recursion(root)
-for _ in 1...query {
-    let node = Int(readLine()!)!
-    print(nodes[node])
-}
+
+solution()
