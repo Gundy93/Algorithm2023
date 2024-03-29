@@ -1,32 +1,42 @@
-let numberOfNodes = Int(readLine()!)!
-var tree = Array(repeating: Set<Int>(), count: numberOfNodes)
-var root = 0
-let parents = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-for index in 0...numberOfNodes - 1 {
-    let node = parents[index]
-    if node == -1 {
-        root = index
-    } else {
-        tree[node].insert(index)
+func solution() {
+    let count = Int(readLine()!)!
+    let parents = readLine()!.split(separator: " ").map { Int($0)! }
+    let willRemove = Int(readLine()!)!
+    let root = parents.firstIndex(of: -1)!
+    
+    guard root != willRemove else {
+        print(0)
+        return
     }
-}
-let target = Int(readLine()!)!
-for index in 0...numberOfNodes - 1 {
-    if tree[index].contains(target) {
-        tree[index].remove(target)
-        break
+    
+    var children = Array(
+        repeating: Set<Int>(),
+        count: count
+    )
+    
+    for node in 0..<count where node != root {
+        children[parents[node]].insert(node)
     }
-}
-var result = 0
-if target != root {
+    
+    var nodes = [willRemove]
+    
+    while let node = nodes.popLast() {
+        children[parents[node]].remove(node)
+        nodes += Array(children[node])
+    }
+    
+    var result = 0
     var needVisit = [root]
-    while needVisit.isEmpty == false {
-        let node = needVisit.removeLast()
-        if tree[node].isEmpty {
+    
+    while let node = needVisit.popLast() {
+        if children[node].isEmpty {
             result += 1
         } else {
-            needVisit += Array(tree[node])
+            needVisit += Array(children[node])
         }
     }
+    
+    print(result)
 }
-print(result)
+
+solution()
