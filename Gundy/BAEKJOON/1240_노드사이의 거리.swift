@@ -1,31 +1,41 @@
-let input = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-let (numberOfNodes, numberOfquerys) = (input[0], input[1])
-var distances: [[Int?]] = Array(repeating: Array(repeating: nil, count: numberOfNodes + 1), count: numberOfNodes + 1)
-var links = Array(repeating: Set<Int>(), count: numberOfNodes + 1)
-for node in 1...numberOfNodes {
-    distances[node][node] = 0
+let input = readLine()!.split(separator: " ").map { Int($0)! }
+var links = [Int : [(Int, Int)]]()
+
+for _ in 1..<input[0] {
+    let input = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    links[input[0], default: []].append((input[1], input[2]))
+    links[input[1], default: []].append((input[0], input[2]))
 }
-for _ in 1...numberOfNodes - 1 {
-    let command = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    distances[command[0]][command[1]] = command[2]
-    distances[command[1]][command[0]] = command[2]
-    links[command[0]].insert(command[1])
-    links[command[1]].insert(command[0])
-}
-func recursion(_ start: Int, _ before: Int, _ now: Int, _ distance: Int) {
-    if distances[start][now] == nil {
-        distances[start][now] = distance
-        distances[now][start] = distance
+
+var dp = Array(
+    repeating: Array(
+        repeating: Int.max,
+        count: input[0]+1
+    ),
+    count: input[0]+1
+)
+
+for start in 1...input[0] {
+    var needVisit = [(start, 0)]
+    
+    while let (node, distance) = needVisit.popLast() {
+        guard dp[start][node] > distance else { continue }
+        
+        dp[start][node] = distance
+        
+        for next in links[node]! {
+            needVisit.append((next.0, distance + next.1))
+        }
     }
-    for next in links[now] {
-        guard next != before else { continue }
-        recursion(start, now, next, distance + distances[now][next]!)
-    }
 }
-for start in 1...numberOfNodes {
-    recursion(start, start, start, 0)
+
+var result = ""
+
+for _ in 0..<input[1] {
+    let nodes = readLine()!.split(separator: " ").map { Int($0)! }
+    
+    result += String(dp[nodes[0]][nodes[1]]) + "\n"
 }
-for _ in 1...numberOfquerys {
-    let numbers = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    print(distances[numbers[0]][numbers[1]]!)
-}
+
+print(result)
