@@ -1,15 +1,19 @@
+import Foundation
+
 func solution(_ s:String) -> Bool {
-    var countOfP: Int = 0
-    var countOfY: Int = 0
-    for text in s {
-        switch text {
-        case "p", "P":
-            countOfP += 1
-        case "y", "Y":
-            countOfY += 1
+    var pCount = 0
+    var yCount = 0
+    
+    for alphabet in s {
+        switch alphabet {
+        case "P", "p":
+            pCount += 1
+        case "Y", "y":
+            yCount += 1
         default:
-            continue
+            break
         }
     }
-    return countOfP == countOfY
+    
+    return pCount == yCount
 }
