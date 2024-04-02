@@ -1,48 +1,30 @@
-struct Queue<DataType> {
-    private var output = [DataType]()
-    private var input: [DataType]
-    var isEmpty: Bool {
-        return output.isEmpty && input.isEmpty
-    }
-
-    init(_ values: [DataType]) {
-        input = values
-    }
-
-    mutating func enqueue(_ newElement: DataType) {
-        input.append(newElement)
-    }
-
-    mutating func dequeue() -> DataType? {
-        if output.isEmpty {
-            if input.isEmpty {
-                return nil
-            }
-            output = input.reversed()
-            input.removeAll()
-        }
-        return output.removeLast()
-    }
-}
+import Foundation
 
 func solution(_ n:Int, _ roads:[[Int]], _ sources:[Int], _ destination:Int) -> [Int] {
-    var links = [Int: [Int]]()
+    var dp = Array(repeating: Int.max, count: n+1)
+    var next = [Int : [Int]]()
+    
     for road in roads {
-        links[road[0], default: []].append(road[1])
-        links[road[1], default: []].append(road[0])
+        next[road[0], default: []].append(road[1])
+        next[road[1], default: []].append(road[0])
     }
-    var times = [Int: Int]()
-    times[destination] = 0
-    var queue = Queue(links[destination]!.map({($0, 1)}))
-    while queue.isEmpty == false {
-        let point = queue.dequeue()!
-        guard times[point.0] == nil else {
-            continue
-        }
-        times[point.0] = point.1
-        for nextPoint in links[point.0]! {
-            queue.enqueue((nextPoint, point.1 + 1))
+    
+    var queue = [(destination, 0)]
+    var index = 0
+
+    while index < queue.count {
+        let (location, distance) = queue[index]
+        
+        index += 1
+        
+        guard distance < dp[location] else { continue }
+
+        dp[location] = distance
+
+        for next in next[location, default: []] {
+            queue.append((next, distance+1))
         }
     }
-    return sources.map({ times[$0] ?? -1 })
+    
+    return sources.map { dp[$0] == Int.max ? -1 : dp[$0] }
 }
