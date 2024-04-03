@@ -1,37 +1,52 @@
-func solution(_ k:Int, _ score:[Int]) -> [Int] {
-    var scores: [Int] = score.reversed()
-    var stack: [Int] = []
-    var result: [Int] = []
-    for _ in 1...k {
-        stack.append(scores.removeLast())
-        stack = stack.sorted(by: >)
-        result.append(stack.last!)
-        if scores.isEmpty {
-            return result
+import Foundation
+
+struct MinHeap {
+    private var container = [Int]()
+    var first: Int? { return container.first }
+    var count: Int { return container.count }
+    mutating func insert(_ newElement: Int) {
+        container.append(newElement)
+        guard container.count > 1 else { return }
+        var index = container.count-1
+        while index > 0 {
+            let parent = (index-1) / 2
+            guard container[index] < container[parent] else { return }
+            container.swapAt(parent, index)
+            index = parent
         }
     }
-    for point in scores.reversed() {
-        stack = insert(point, stack)
-        result.append(stack.last!)
+    mutating func removeFirst() -> Int? {
+        if container.count <= 1 { return container.popLast() }
+        container.swapAt(0, container.count-1)
+        let element = container.popLast()
+        var index = 0
+        while index < container.count-1 {
+            var current = index
+            let left = index * 2 + 1
+            if left < container.count,
+               container[current] > container[left] { current = left }
+            let right = index * 2 + 2
+            if right < container.count,
+               container[current] > container[right] { current = right }
+            guard current != index else { break }
+            container.swapAt(index, current)
+            index = current
+        }
+        return element
     }
-    return result
 }
 
-func insert(_ score: Int, _ stack: [Int]) -> [Int] {
-    var temporaryContainer: [Int] = []
-    var stack: [Int] = stack
-    while stack.isEmpty == false {
-        let last: Int = stack.removeLast()
-        if last > score {
-            stack.append(last)
-            break
-        }
-        temporaryContainer.append(last)
+func solution(_ k:Int, _ score:[Int]) -> [Int] {
+    var heap = MinHeap()
+    var result = [Int]()
+    
+    for point in score {
+        heap.insert(point)
+        
+        if heap.count > k { _ = heap.removeFirst() }
+        
+        result.append(heap.first!)
     }
-    guard temporaryContainer.isEmpty == false else { return stack }
-    stack.append(score)
-    while temporaryContainer.count > 1 {
-        stack.append(temporaryContainer.removeLast())
-    }
-    return stack
+    
+    return result
 }
