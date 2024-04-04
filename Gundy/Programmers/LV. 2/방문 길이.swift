@@ -1,25 +1,27 @@
+import Foundation
+
 func solution(_ dirs:String) -> Int {
-    var x: Int = 0
-    var y: Int = 0
-    var firstRoutes: Set<Set<String>> = []
-    for command in dirs {
-        let origin: String = "\(x),\(y)"
-        switch command {
+    var x = 0
+    var y = 0
+    var visited = Set<Set<[Int]>>()
+    
+    for direction in dirs {
+        let origin = [x, y]
+        switch direction {
         case "U":
-            guard y < 5 else { continue }
-            y += 1
+            y = min(y+1, 5)
         case "D":
-            guard y > -5 else { continue }
-            y -= 1
+            y = max(y-1, -5)
         case "R":
-            guard x < 5 else { continue }
-            x += 1
+            x = min(x+1, 5)
         default:
-            guard x > -5 else { continue }
-            x -= 1
+            x = max(x-1, -5)
         }
-        let newPoint: String = "\(x),\(y)"
-        firstRoutes.insert([origin, newPoint])
+        
+        guard [x, y] != origin else { continue }
+        
+        visited.insert([[x, y], origin])
     }
-    return firstRoutes.count
+    
+    return visited.count
 }
