@@ -1,11 +1,11 @@
 struct Heap<T> {
-    private(set) var box: [T]
+    private(set) var box: [T] = []
     private var condition: (T, T) -> Bool
+    var first: T? { box.first }
     var isEmpty: Bool { return box.isEmpty }
     var count: Int { return box.count }
     
-    init(_ elements: [T] = [], _ condition: @escaping (T, T) -> Bool) {
-        box = elements
+    init(_ condition: @escaping (T, T) -> Bool) {
         self.condition = condition
     }
     
@@ -33,6 +33,7 @@ struct Heap<T> {
         }
     }
     
+    @discardableResult
     mutating func removeFirst() -> T? {
         guard count > 1 else { return box.popLast() }
         box.swapAt(0, count - 1)
@@ -56,29 +57,36 @@ struct Heap<T> {
     }
 }
 
-let input = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-let (numberOfQueries, numberOfInformations) = (input[0], input[1])
-var log = [Int: (Set<Int>, Int)]()
-for _ in 1...numberOfInformations {
-    let queries = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    log[queries[0], default: ([], 0)].0.insert(queries[1])
-    log[queries[1], default: ([], 0)].1 += 1
-}
-var result = [String]()
-var heap = Heap([Int](), <)
-for number in 1...numberOfQueries {
-    if log[number, default: ([], 0)].1 == 0 {
-        heap.insert(number)
+func solution() {
+    let input = readLine()!.split(separator: " ").map { Int($0)! }
+    var previous = Array(repeating: Set<Int>(), count: input[0]+1)
+    var next = [Int : Set<Int>]()
+    var heap = Heap<Int>(<)
+    
+    for _ in 0..<input[1] {
+        let link = readLine()!.split(separator: " ").map { Int($0)! }
+        
+        previous[link[1]].insert(link[0])
+        next[link[0], default: []].insert(link[1])
     }
-}
-while heap.isEmpty == false {
-    let number = heap.removeFirst()!
-    result.append(String(number))
-    for next in log[number, default: ([], 0)].0 {
-        log[next, default: ([], 0)].1 -= 1
-        if log[next, default: ([], 0)].1 == 0 {
-            heap.insert(next)
+    
+    for question in 1...input[0] where previous[question].isEmpty {
+        heap.insert(question)
+    }
+    
+    var result = [String]()
+    
+    while let question = heap.removeFirst() {
+        result.append(String(question))
+        
+        for next in next[question, default: []] {
+            previous[next].remove(question)
+            
+            if previous[next].isEmpty { heap.insert(next) }
         }
     }
+    
+    print(result.joined(separator: " "))
 }
-print(result.joined(separator: " "))
+
+solution()
