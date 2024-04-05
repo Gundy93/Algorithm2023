@@ -1,15 +1,15 @@
-func solution(_ storey:Int) -> Int {
-    var storey = storey
-    var result = 0
-    while storey > 0 {
-        let number = storey % 10
-        if number >= 6 || number == 5 && (storey / 10) % 10 >= 5 {
-            result += 10 - number
-            storey = storey / 10 + 1
-        } else {
-            result += number
-            storey /= 10
+import Foundation
+
+func solution(_ number:Int, _ limit:Int, _ power:Int) -> Int {
+    var count = Array(repeating: 1, count: number+1)
+    
+    guard number > 1 else { return 1 }
+    
+    for current in 2...number {
+        for multiple in stride(from: current, through: number, by: current) {
+            count[multiple] += 1
         }
     }
-    return result
+    
+    return count[1...].map { $0 > limit ? power : $0 }.reduce(0, +)
 }
