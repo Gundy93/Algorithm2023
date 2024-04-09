@@ -1,32 +1,46 @@
-let input = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-var roots = Array(stride(from: 0, through: input[0], by: 1))
-var sets = roots.map({ Set([$0]) })
-var links = [[Int]]()
-var result = 0
-func findRoot(_ index: Int) -> Int {
-    var number = index
-    var root = roots[number]
-    while number != root {
-        number = root
-        root = roots[root]
+func solution() {
+    let input = readLine()!.split(separator: " ").map { Int($0)! }
+    var roots = Array(0...input[0])
+    var stack = [[Int]]()
+    
+    for _ in 0..<input[1] {
+        stack.append(readLine()!.split(separator: " ").map { Int($0)! })
     }
-    return root
-}
-for _ in 1...input[1] {
-    links.append(readLine()!.split(separator: " ").map(String.init).compactMap(Int.init))
-}
-links.sort(by: { $0[2] < $1[2] })
-for link in links {
-    let left = findRoot(link[0])
-    let right = findRoot(link[1])
-    guard left != right else { continue }
-    if sets[left].count >= sets[right].count {
-        sets[left] = sets[left].union(sets[right])
-        roots[right] = left
-    } else {
-        sets[right] = sets[right].union(sets[left])
-        roots[left] = right
+    
+    stack.sort { $0[2] < $1[2] }
+    
+    var result = 0
+    
+    func root(_ node: Int) -> (Int, Int) {
+        var current = node
+        var root = roots[node]
+        var count = 0
+        
+        while current != root {
+            count += 1
+            current = root
+            root = roots[root]
+        }
+        
+        return (root, count)
     }
-    result += link[2]
+    
+    for link in stack {
+        let left = root(link[0])
+        let right = root(link[1])
+        
+        guard left.0 != right.0 else { continue }
+        
+        result += link[2]
+        
+        if left.1 < right.1 {
+            roots[left.0] = right.0
+        } else {
+            roots[right.0] = left.0
+        }
+    }
+    
+    print(result)
 }
-print(result)
+
+solution()
