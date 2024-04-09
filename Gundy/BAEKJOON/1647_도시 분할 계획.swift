@@ -62,18 +62,14 @@ func solution() {
     
     var parents = Array(0...numberOfNodes)
     
-    func root(_ node: Int) -> (Int, Int) {
-        var node = node
-        var parent = parents[node]
-        var count = 0
+    func root(_ node: Int) -> Int {
+        let parent = parents[node]
         
-        while node != parent {
-            node = parent
-            parent = parents[node]
-            count += 1
-        }
+        guard parent != node else { return node }
         
-        return (parent, count)
+        parents[node] = root(parent)
+        
+        return parents[node]
     }
     
     var index = 0
@@ -88,14 +84,9 @@ func solution() {
         
         index += 1
         
-        guard left.0 != right.0 else { continue }
+        guard left != right else { continue }
         
-        if left.1 < right.1 {
-            parents[left.0] = right.0
-        } else {
-            parents[right.0] = left.0
-        }
-        
+        parents[left] = right
         count += 1
         result += link[2]
     }
