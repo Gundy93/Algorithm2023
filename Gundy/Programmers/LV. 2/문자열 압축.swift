@@ -1,38 +1,43 @@
+import Foundation
+
 func solution(_ s:String) -> Int {
-    let s = s.map(String.init)
+    let words = s.map(String.init)
     var result = s.count
-    for length in stride(from: 1, through: result / 2, by: 1) {
-        var stack = [String]()
-        var text = String()
-        for word in s {
-            text += word
-            if text.count == length {
-                stack.append(text)
-                text.removeAll()
+    
+    func compress(by count: Int) {
+        var stack = [(String, Int)]()
+        var temporary = ""
+        
+        for word in words {
+            if temporary.count == count {
+                if let last = stack.last,
+                   last.0 == temporary {
+                    stack[stack.count-1].1 += 1
+                } else {
+                    stack.append((temporary, 1))
+                }
+                
+                temporary = ""
             }
+            
+            temporary += word
         }
-        if text.isEmpty == false {
-            stack.append(text)
+        
+        if let last = stack.last,
+           last.0 == temporary {
+            stack[stack.count-1].1 += 1
+        } else {
+            stack.append((temporary, 1))
         }
-        var compressed = String()
-        var count = 1
-        var index = 1
-        var word = stack[0]
-        while index < stack.count {
-            if stack[index] == word {
-                count += 1
-                index += 1
-            } else {
-                compressed += count > 1 ? String(count) + word : word
-                word = stack[index]
-                count = 1
-                index += 1
-            }
-        }
-        compressed += count > 1 ? String(count) + word : word
-        if compressed.count < result {
-            result = compressed.count
-        }
+        
+        let text = stack.map { $0.1 == 1 ? $0.0 : String($0.1) + $0.0 }.joined()
+        
+        result = min(result, text.count)
     }
+    
+    for count in 1..<s.count/2 + 1 {
+        compress(by: count)
+    }
+    
     return result
 }
