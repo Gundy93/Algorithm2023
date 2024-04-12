@@ -1,45 +1,51 @@
-let numberOfCities = Int(readLine()!)!
-let numberOfBuses = Int(readLine()!)!
-var cities = Array(repeating: Array(repeating: Int.max, count: numberOfCities), count: numberOfCities)
-var next = cities
-for _ in 1...numberOfBuses {
-    let bus = readLine()!.split(separator: " ").map(String.init).compactMap(Int.init)
-    let (first, second, cost) = (bus[0] - 1, bus[1] - 1, bus[2])
-    cities[first][second] = min(cities[first][second], cost)
-    next[first][second] = second
-}
-for center in 0...numberOfCities - 1 {
-    cities[center][center] = 0
-    for first in 0...numberOfCities - 1 {
-        let firstCost = cities[first][center]
-        guard first != center, firstCost < Int.max else { continue }
-        for second in 0...numberOfCities - 1 {
-            let secondCost = cities[center][second]
-            guard second != first, secondCost < Int.max else { continue }
-            let cost = firstCost + secondCost
-            if cities[first][second] > cost {
-                cities[first][second] = cost
-                next[first][second] = next[first][center]
+func solution() {
+    let numberOfCities = Int(readLine()!)!
+    let numberOfBuses = Int(readLine()!)!
+    var costs = Array(
+        repeating: Array(
+            repeating: (Int.max, [Int]()),
+            count: numberOfCities
+        ), count: numberOfCities
+    )
+
+    for _ in 0..<numberOfBuses {
+        let bus = readLine()!.split(separator: " ").map { Int($0)! }
+        let (first, second, cost) = (bus[0] - 1, bus[1] - 1, bus[2])
+        
+        if costs[first][second].0 > cost {
+            costs[first][second] = (cost, [first+1])
+        }
+    }
+
+    for mid in 0..<numberOfCities {
+        costs[mid][mid] = (0, [mid])
+        
+        for start in 0...numberOfCities - 1 where start != mid {
+            guard costs[start][mid].0 < Int.max else { continue }
+            
+            for end in 0...numberOfCities - 1 where end != start {
+                guard costs[mid][end].0 < Int.max else { continue }
+                
+                if costs[start][end].0 > costs[start][mid].0 + costs[mid][end].0 {
+                    costs[start][end] = (costs[start][mid].0 + costs[mid][end].0, costs[start][mid].1 + costs[mid][end].1)
+                }
             }
         }
     }
-}
-cities.forEach({ print($0.map({ $0 == Int.max ? "0" : String($0) }).joined(separator: " ")) })
-func makePath(_ from: Int, _ to: Int) -> [Int] {
-    guard from != to, cities[from][to] != Int.max else { return [] }
-    var result = [from + 1]
-    var current = next[from][to]
-    while current != to {
-        result.append(current + 1)
-        current = next[current][to]
+    
+    var costText = ""
+    var pathText = ""
+    
+    for city in costs {
+        for (detination, (cost, path)) in city.enumerated() {
+            costText += [0, Int.max].contains(cost) ? "0 " : String(cost) + " "
+            pathText += [0, Int.max].contains(cost) ? "0\n" : ( [path.count+1] + path + [detination+1]).map(String.init).joined(separator: " ") + "\n"
+        }
+        
+        costText += "\n"
     }
-    result.append(to + 1)
-    return result
+    
+    print(costText + pathText)
 }
-for from in 0...numberOfCities - 1 {
-    for to in 0...numberOfCities - 1 {
-        let path = makePath(from, to)
-        let result = [path.count] + path
-        print(result.map(String.init).joined(separator: " "))
-    }
-}
+
+solution()
