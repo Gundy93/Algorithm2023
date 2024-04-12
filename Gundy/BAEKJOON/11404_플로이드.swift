@@ -1,40 +1,35 @@
-let maxCost = Int.max / 2
-let numberOfCities = Int(readLine()!)!
-let count = Int(readLine()!)!
-var buses = [(Int, Int, Int)]()
+func solution() {
+    let numberOfCities = Int(readLine()!)!
+    let numberOfBuses = Int(readLine()!)!
+    var costs = Array(
+        repeating: Array(
+            repeating: Int.max,
+            count: numberOfCities
+        ), count: numberOfCities
+    )
 
-for _ in 1...count {
-    let bus = readLine()!.split(separator: " ").map { Int($0)! }
-    
-    buses.append((bus[0], bus[1], bus[2]))
-}
-
-var costs = Array(repeating: Array(repeating: maxCost, count: numberOfCities + 1), count: numberOfCities + 1)
-
-for city in 1...numberOfCities {
-    costs[city][city] = 0
-}
-
-for (start, end, cost) in buses {
-    costs[start][end] = min(costs[start][end], cost)
-}
-
-for mid in 1...numberOfCities {
-    for start in 1...numberOfCities {
-        guard start != mid else { continue }
+    for _ in 0..<numberOfBuses {
+        let bus = readLine()!.split(separator: " ").map { Int($0)! }
+        let (first, second, cost) = (bus[0] - 1, bus[1] - 1, bus[2])
         
-        for end in 1...numberOfCities {
-            guard end != start else { continue }
+        costs[first][second] = min(costs[first][second], cost)
+    }
+
+    for mid in 0..<numberOfCities {
+        costs[mid][mid] = 0
+        
+        for start in 0...numberOfCities - 1 where start != mid {
+            guard costs[start][mid] < Int.max else { continue }
             
-            costs[start][end] = min(costs[start][end], costs[start][mid] + costs[mid][end])
+            for end in 0...numberOfCities - 1 where end != start {
+                guard costs[mid][end] < Int.max else { continue }
+                
+                costs[start][end] = min(costs[start][end], costs[start][mid] + costs[mid][end])
+            }
         }
     }
+
+    print(costs.map { $0.map { $0 == .max ? "0" : String($0) }.joined(separator: " ") }.joined(separator: "\n"))
 }
 
-var result = String()
-
-for city in 1...numberOfCities {
-    result += costs[city][1...numberOfCities].map { $0 == maxCost ? "0" : String($0) }.joined(separator: " ") + "\n"
-}
-
-print(result)
+solution()
