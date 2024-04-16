@@ -1,26 +1,30 @@
-func solution(_ record:[String]) -> [String] {
-    var idList: [String : String] = [:]
-    var stack: [(id: String, command: String)] = []
-    for log in record {
-        let log: [String] = log.split(separator: " ").map({ String($0) })
-        switch log[0] {
-        case "Change":
-            idList[log[1]] = log[2]
-        default:
-            if log[0] == "Enter" {
-                idList[log[1]] = log[2]
-            }
-            stack.append((log[1], log[0]))
-        }
-    }
-    return stack.map({ toText(idList[$0.id]!, $0.command) })
-}
+import Foundation
 
-func toText(_ name: String, _ commad: String) -> String {
-    switch commad {
-    case "Enter":
-        return name + "님이 들어왔습니다."
-    default:
-        return name + "님이 나갔습니다."
+func solution(_ record:[String]) -> [String] {
+    let records = record.map { $0.split(separator: " ").map(String.init) }
+    var nickName = [String : String]()
+    var result = [[String]]()
+    
+    for record in records {
+        if record.count > 2 { nickName[record[1]] = record[2] }
+        
+        guard record[0] != "Change" else { continue }
+        
+        result.append([record[1], record[0]])
+    }
+    
+    return result.map {
+        var result = nickName[$0[0]]!
+        
+        switch $0[1] {
+        case "Enter":
+            result += "님이 들어왔습니다."
+        case "Leave":
+            result += "님이 나갔습니다."
+        default:
+            break
+        }
+        
+        return result
     }
 }
