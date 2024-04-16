@@ -1,20 +1,29 @@
 func solution(_ n:Int, _ m:Int) -> [Int] {
-    let smallNumber: Int = n < m ? n : m
-    let bigNumber: Int = n + m - smallNumber
-    var result: [Int] = []
-    for number in stride(from: smallNumber, through: 1, by: -1) {
-        if smallNumber % number == 0,
-        bigNumber % number == 0 {
-            result.append(number)
-            break
+    var lhs = n
+    var rhs = m
+    var divisor = 2
+    var result = [1, 1]
+    
+    while divisor <= lhs || divisor <= rhs {
+        switch (lhs % divisor, rhs % divisor) {
+        case (0, 0):
+            result[0] *= divisor
+            lhs /= divisor
+            rhs /= divisor
+        case (0, _):
+            result[1] *= divisor
+            lhs /= divisor
+        case (_, 0):
+            result[1] *= divisor
+            rhs /= divisor
+        default:
+            divisor += 1
         }
     }
-    for number in bigNumber... {
-        if number % smallNumber == 0,
-        number % bigNumber == 0 {
-            result.append(number)
-            break
-        }
-    }
+    
+    result[1] *= lhs
+    result[1] *= rhs
+    result[1] *= result[0]
+    
     return result
 }
