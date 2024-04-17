@@ -1,38 +1,56 @@
+import Foundation
+
 class Node {
-    let number : Int
-    let x: Int
+    let number: Int
     var left: Node?
     var right: Node?
     
-    init(_ number: Int, _ x: Int) {
+    init(_ number: Int) {
         self.number = number
-        self.x = x
     }
 }
 
 func solution(_ nodeinfo:[[Int]]) -> [[Int]] {
-    var head: Node? = nil
-    func insert(_ number: Int, _ x: Int, _ node: inout Node?) {
-        guard let now = node else {
-            node = Node(number, x)
-            return
-        }
-        if now.x > x {
-            insert(number, x, &now.left)
-        } else {
-            insert(number, x, &now.right)
-        }
+    var nodes = [(Int, Int, Int)]()
+    
+    for (number, node) in nodeinfo.enumerated() {
+        nodes.append((node[0], node[1], number+1))
     }
     
-    func makePreorder(_ node: Node?) -> [Int] {
-        guard let node = node else { return [] }
-        return [node.number] + makePreorder(node.left) + makePreorder(node.right)
+    func findRoot(_ nodes: [(Int, Int, Int)]) -> Node? {
+        guard nodes.isEmpty == false else { return nil }
+        
+        var maxIndex = -1
+        var maximumY = -1
+        
+        for index in 0..<nodes.count {
+            if nodes[index].1 > maximumY {
+                maxIndex = index
+                maximumY = nodes[index].1
+            }
+        }
+        
+        let root = Node(nodes[maxIndex].2)
+        
+        root.left = findRoot(Array(nodes[0..<maxIndex]))
+        root.right = findRoot(Array(nodes[maxIndex+1..<nodes.count]))
+        
+        return root
     }
     
-    func makePostorder(_ node: Node?) -> [Int] {
-        guard let node = node else { return [] }
-        return makePostorder(node.left) + makePostorder(node.right) + [node.number]
+    let root = findRoot(nodes.sorted { $0.0 < $1.0 })
+    
+    func preorder(_ node: Node?) -> [Int] {
+        guard node != nil else { return [] }
+        
+        return [node!.number] + preorder(node?.left) + preorder(node?.right)
     }
-    nodeinfo.enumerated().sorted(by: { return $0.element[1] > $1.element[1] }).forEach { insert($0.offset + 1, $0.element[0], &head) }
-    return [makePreorder(head), makePostorder(head)]
+    
+    func postorder(_ node: Node?) -> [Int] {
+        guard node != nil else { return [] }
+        
+        return postorder(node?.left) + postorder(node?.right) + [node!.number]
+    }
+    
+    return [preorder(root), postorder(root)]
 }
