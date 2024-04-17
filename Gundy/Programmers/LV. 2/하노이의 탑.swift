@@ -1,7 +1,21 @@
+import Foundation
+
 func solution(_ n:Int) -> [[Int]] {
-    func recursion(at: Int, to: Int, number: Int) -> [[Int]] {
-        guard number > 1 else { return [[at, to]] }
-        return recursion(at: at, to: 6 - at - to, number: number - 1) + [[at, to]] + recursion(at: 6 - at - to, to: to, number: number - 1)
+    var result = [[Int]]()
+    
+    func recursion(_ from: Int, _ to: Int, _ number: Int) {
+        guard number > 1 else {
+            result.append([from, to])
+            
+            return
+        }
+        
+        recursion(from, 6 - from - to, number-1)
+        result.append([from, to])
+        recursion(6 - from - to, to, number-1)
     }
-    return recursion(at: 1, to: 3, number: n)
+    
+    recursion(1, 3, n)
+    
+    return result
 }
