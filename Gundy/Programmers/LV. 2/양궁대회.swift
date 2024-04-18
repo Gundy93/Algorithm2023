@@ -1,72 +1,84 @@
-struct Queue<T> {
-    private var output = [T]()
-    private var input: [T]
-    var isEmpty: Bool { return output.isEmpty && input.isEmpty }
-
-    init(_ elements: [T]) {
-        input = elements
-    }
-
-    mutating func enqueue(_ newElement: T) {
-        input.append(newElement)
-    }
-
-    mutating func dequeue() -> T? {
-        if output.isEmpty {
-            guard input.isEmpty == false else { return nil }
-            output = input.reversed()
-            input.removeAll()
-        }
-        return output.removeLast()
-    }
-}
+import Foundation
 
 func solution(_ n:Int, _ info:[Int]) -> [Int] {
-    var count = [Int: Int]()
-    for (index, number) in info.enumerated() {
-        count[10 - index] = number
-    }
-    var result = [-1]
-    var scoreDifference = 0
-    var queue = Queue([([Int](), 10, 0)])
-    while queue.isEmpty == false {
-        let (numbers, now, number) = queue.dequeue()!
-        guard now > 0 else {
-            let numbers = numbers + [n - number]
-            var scoreA = 0
-            var scoreR = 0
-            for ((index, apeach), ryan) in zip(info.enumerated(), numbers) {
-                if apeach == 0, ryan == 0 {
-                    continue
-                }
-                if apeach >= ryan {
-                    scoreA += 10 - index
-                } else {
-                    scoreR += 10 - index
-                }
+    var result = [[Int]]()
+    var winningPoint = 0
+    var arrows = Array(repeating: 0, count: 11)
+    var count = n
+    var current = 0
+    
+    func comparePoint() -> Int {
+        var ryan = 0
+        var apeach = 0
+        
+        for index in 0...9 {
+            let point = 10 - index
+            
+            if arrows[index] > info[index] {
+                ryan += point
+            } else if info[index] >= arrows[index],
+                      info[index] != 0 {
+                apeach += point
             }
-            if scoreR > scoreA, scoreR - scoreA >= scoreDifference {
-                if result != [-1], scoreR - scoreA == scoreDifference {
-                    var isValid = true
-                    for (origin, new) in zip(result[0...9].reversed(), numbers[0...9].reversed()) {
-                        if origin > new {
-                            isValid = false
-                            break
-                        } else if origin < new {
-                            break
-                        }
-                    }
-                    guard isValid else { continue }
-                }
-                result = numbers
-                scoreDifference = scoreR - scoreA
-            }
-            continue
         }
-        if let apeach = count[now], apeach < n - number {
-            queue.enqueue((numbers + [apeach + 1], now - 1, number + apeach + 1))
-        }
-        queue.enqueue((numbers + [0], now - 1, number))
+        
+        return ryan - apeach
     }
-    return result
+    
+    func backtracking() {
+        guard count > 0, current < 10 else {
+            if current == 10 {
+                arrows[10] += count
+            }
+            
+            let point = comparePoint()
+            
+            if point > winningPoint {
+                winningPoint = point
+                result = [arrows]
+            } else if point == winningPoint {
+                result.append(arrows)
+            }
+            
+            arrows[10] = 0
+            
+            return
+        }
+        
+        let temporary = current
+        
+        for index in current..<10 {
+            current = index+1
+            
+            if count >= info[index]+1 {
+                count -= info[index]+1
+                arrows[index] = info[index]+1
+            }
+            
+            backtracking()
+            
+            if arrows[index] > 0 {
+                count += info[index]+1
+                arrows[index] = 0
+            }
+        }
+        
+        current = temporary
+    }
+    
+    func mini(_ lhs: [Int], rhs: [Int]) -> Bool {
+        for (left, right) in zip(lhs, rhs).reversed() {
+            if left > right {
+                return true
+            } else if left < right {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    backtracking()
+    
+    return winningPoint > 0 ? result.min(by: mini)! : [-1]
 }
