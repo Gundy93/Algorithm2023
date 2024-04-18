@@ -1,105 +1,100 @@
-struct Heap<Element> {
-    private var container: [Element]
-    var isEmpty: Bool {
-        return container.isEmpty
-    }
-    var count: Int {
-        return container.count
-    }
-    private var condition: (Element, Element) -> Bool
+import Foundation
 
-    init(_ elements: [Element] = [], condition: @escaping (Element, Element) -> Bool) {
-        container = elements
+struct Heap<T> {
+    private(set) var box: [T] = []
+    private var condition: (T, T) -> Bool
+    var first: T? { box.first }
+    var isEmpty: Bool { return box.isEmpty }
+    var count: Int { return box.count }
+    
+    init(_ condition: @escaping (T, T) -> Bool) {
         self.condition = condition
     }
-
-    mutating func insert(_ newElement: Element) {
-        container.append(newElement)
-
-        var index = count - 1
-        var parentIndex = getParentIndex(of: index)
-
-        while index > 0,
-              condition(container[index], container[parentIndex]) {
-            container.swapAt(index, parentIndex)
-            index = parentIndex
-            parentIndex = getParentIndex(of: index)
-        }
-    }
-
-    mutating func removeFirst() -> Element? {
-        guard isEmpty == false else {
-            return nil
-        }
-
-        container.swapAt(0, container.count - 1)
-
-        let element = container.removeLast()
-        var index = 0
-
-        while index < count {
-            let leftChildIndex = getLeftChildIndex(of: index)
-            let rightChildIndex = getRightChildIndex(of: index)
-            var parentIndex = index
-
-            if leftChildIndex < count,
-               condition(container[leftChildIndex], container[parentIndex]) {
-                parentIndex = leftChildIndex
-            }
-
-            if rightChildIndex < count,
-               condition(container[rightChildIndex], container[parentIndex]) {
-                parentIndex = rightChildIndex
-            }
-
-            guard index != parentIndex else {
-                break
-            }
-
-            container.swapAt(index, parentIndex)
-            index = parentIndex
-        }
-        return element
-    }
-
-    mutating func removeLast() -> Element? {
-        guard isEmpty == false else { return nil }
-        container.sort(by: condition)
-        return container.removeLast()
-    }
-
-    private func getParentIndex(of index: Int) -> Int {
+    
+    private func getSuperIndex(of index: Int) -> Int {
         return (index - 1) / 2
     }
-
-    private func getLeftChildIndex(of index: Int) -> Int {
+    
+    private func getLeftIndex(of index: Int) -> Int {
         return index * 2 + 1
     }
-
-    private func getRightChildIndex(of index: Int) -> Int {
+    
+    private func getRightIndex(of index: Int) -> Int {
         return index * 2 + 2
+    }
+    
+    mutating func insert(_ newElement: T) {
+        box.append(newElement)
+        guard count > 1 else { return }
+        var index = count - 1
+        while index > 0 {
+            let superIndex = getSuperIndex(of: index)
+            guard condition(box[index], box[superIndex]) else { return }
+            box.swapAt(superIndex, index)
+            index = superIndex
+        }
+    }
+    
+    @discardableResult
+    mutating func removeFirst() -> T? {
+        guard count > 1 else { return box.popLast() }
+        box.swapAt(0, count - 1)
+        let element = box.removeLast()
+        var index = 0
+        while index < count - 1 {
+            var superIndex = index
+            let leftIndex = getLeftIndex(of: index)
+            let rightIndex = getRightIndex(of: index)
+            if leftIndex < count, condition(box[leftIndex], box[superIndex]) {
+                superIndex = leftIndex
+            }
+            if rightIndex < count, condition(box[rightIndex], box[superIndex]) {
+                superIndex = rightIndex
+            }
+            guard index != superIndex else { break }
+            box.swapAt(index, superIndex)
+            index = superIndex
+        }
+        return element
     }
 }
 
 func solution(_ operations:[String]) -> [Int] {
-    var heap = Heap<Int>(condition: >)
-    for operation in operations {
-        let command = operation.split(separator: " ").map(String.init)
-        switch command[0] {
-        case "I":
-            heap.insert(Int(command[1])!)
-        default:
-            if command[1] == "1" {
-                let _ = heap.removeFirst()
-            } else {
-                let _ = heap.removeLast()
+    var minHeap = Heap<[Int]>() { $0[1] < $1[1] }
+    var maxHeap = Heap<[Int]>() { $0[1] > $1[1] }
+    var removed = Array(repeating: false, count: operations.count)
+    
+    for index in 0..<operations.count {
+        let operation = operations[index].split(separator: " ").map(String.init)
+        let number = Int(operation[1])!
+        
+        if operation[0] == "I" {
+            minHeap.insert([index, number])
+            maxHeap.insert([index, number])
+        } else if number == 1 {
+            while let max = maxHeap.removeFirst() {
+                if removed[max[0]] == false {
+                    removed[max[0]] = true
+                    break
+                }
+            }
+        } else {
+            while let min = minHeap.removeFirst() {
+                if removed[min[0]] == false {
+                    removed[min[0]] = true
+                    break
+                }
             }
         }
     }
-    var max = heap.removeFirst()
-    let min = heap.removeLast()
-    if max == nil {
-        return [0, 0]
+    
+    while let first = maxHeap.first, removed[first[0]] {
+        maxHeap.removeFirst()
     }
-    return [max!, min ?? max!]
+    
+    while let first = minHeap.first, removed[first[0]] {
+        minHeap.removeFirst()
+    }
+    
+    return [maxHeap.removeFirst()?[1] ?? 0, minHeap.removeFirst()?[1] ?? 0]
 }
