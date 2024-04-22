@@ -1,48 +1,49 @@
-func solution(_ dartResult:String) -> Int {
-    var result: [Int] = []
-    var points: String = String(dartResult.reversed())
-    while points.isEmpty == false {
-        var text: String = ""
-        for _ in 1...2 {
-            text += String(points.removeLast())
-        }
-        while points.isEmpty == false,
-              Int(String(points.last!)) == nil {
-            text += String(points.removeLast())
-        }
-        let point = makePoint(from: text)
-        if point.option == 2,
-           let last = result.popLast() {
-            result.append(last * 2)
-        }
-        result.append(point.point * point.option)
-    }
-    return result.reduce(0, +)
+enum Award: Character {
+    case star = "*"
+    case acha = "#"
 }
 
-func makePoint(from text: String) -> (point: Int, option: Int) {
-    var text: String = String(text.reversed())
-    var point: String = ""
-    while Int(String(text.last!)) != nil {
-        point += String(text.removeLast())
-    }
-    var result: Int = Int(point)!
-    switch text.removeLast() {
-    case "D":
-        result *= result
-    case "T":
-        result *= result * result
-    default:
-        break
-    }
-    var option: Int = 1
-    if text.isEmpty == false {
-        switch text {
-        case "*":
-            option = 2
-        default:
-            option = -1
+func solution(_ dartResult:String) -> Int {
+    var darts = [(Int, Int, Award?)]()
+    var stack = ""
+    
+    for input in dartResult {
+        if input.isNumber {
+            stack.append(input)
+        } else if ["S", "D", "T"].contains(input) {
+            darts.append((Int(String(stack))!, 0, nil))
+            stack = ""
+            
+            switch input {
+            case "S":
+                darts[darts.count-1].1 = 1
+            case "D":
+                darts[darts.count-1].1 = 2
+            default:
+                darts[darts.count-1].1 = 3
+            }
+        } else {
+            darts[darts.count-1].2 = Award(rawValue: input)!
         }
     }
-    return (result, option)
+    
+    var result = Array(repeating: 0, count: darts.count)
+    
+    for index in 0..<darts.count {
+        result[index] = Array(repeating: darts[index].0, count: darts[index].1).reduce(1, *)
+        
+        if let award = darts[index].2 {
+            if award == .star {
+                result[index] *= 2
+                
+                if index > 0 {
+                    result[index-1] *= 2
+                }
+            } else {
+                result[index] *= -1
+            }
+        }
+    }
+    
+    return result.reduce(0,+)
 }
