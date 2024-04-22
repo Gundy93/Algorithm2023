@@ -1,39 +1,22 @@
-struct Queue {
-    private var output: [Int] = []
-    private var input: [Int]
-    var value: Int  = 0
-    var numberOfDequeues: Int = 0
-    var count: Int {
-        return output.count + input.count
-    }
+import Foundation
 
-    init(_ elements: [Int]) {
-        input = elements
-    }
-
-    mutating func enqueue(_ element: Int) {
-        value += element
-        input.append(element)
-    }
-
-    mutating func dequeue() {
-        numberOfDequeues += 1
-        if output.isEmpty {
-            output = input.reversed()
-            input.removeAll()
-        }
-        value -= output.removeLast()
-    }
-}
 func solution(_ bridge_length:Int, _ weight:Int, _ truck_weights:[Int]) -> Int {
-    var queue = Queue(Array(repeating: 0, count: bridge_length))
+    var queue = [(Int, Int)]()
+    var index = 0
+    var partialSum = 0
+    var time = 0
+    
     for truck in truck_weights {
-        queue.dequeue()
-        while queue.value + truck > weight {
-            queue.enqueue(0)
-            queue.dequeue()
+        while partialSum + truck > weight {
+            partialSum -= queue[index].0
+            time = max(time, queue[index].1 + bridge_length)
+            index += 1
         }
-        queue.enqueue(truck)
+        
+        partialSum += truck
+        queue.append((truck, time))
+        time += 1
     }
-    return queue.numberOfDequeues + queue.count
+    
+    return queue.last!.1 + bridge_length + 1
 }
