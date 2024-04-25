@@ -1,15 +1,18 @@
-func solution(_ s: String) -> Bool {
-    var stack: [Character] = []
+import Foundation
+
+func solution(_ s:String) -> Bool {
+    var stack = ""
+    
     for character in s {
-        switch character {
-        case "(":
+        if character == "(" {
             stack.append(character)
-        default:
-            guard stack.isEmpty == false else {
-                return false
-            }
+        } else {
+            guard let last = stack.last,
+                  last == "(" else { return false }
+            
             stack.removeLast()
         }
     }
-    return stack.isEmpty ? true : false
+    
+    return stack.isEmpty
 }
